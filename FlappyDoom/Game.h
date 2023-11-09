@@ -15,24 +15,26 @@ private:
 	float fAccumulatedTime = 0.0f;
 	float fLastAnimTime = 0.0f;
 
-	//Scene* scene;
+	Scene* scene = nullptr;
 
-	//Scene objects;
-	Bird sBird;
-	//Background sBackground;
-	olc::Decal* sBackground = nullptr;
+	////Scene objects;
+	//Bird sBird;
+	////Background sBackground;
+	//olc::Decal* sBackground = nullptr;
 
 public:
 	Game()
 	{
 		// Name your application
 		sAppName = "FlappyDOOM";
+		scene = new Scene();
 	}
 
 public:
 	bool OnUserCreate() override
 	{
-		loadAssets();
+		scene->initScene();
+		//loadAssets();
 		return true;
 	}
 
@@ -40,18 +42,20 @@ public:
 	{
 		fAccumulatedTime += fElapsedTime;
 		if (fAccumulatedTime > fTickRate) {
-			//scene->tick(fElapsedTime);
-			sBird.update(fElapsedTime);
+			scene->tick(fElapsedTime);
+			//sBird.update(fElapsedTime);
 			//fScene.tick(fElapsedTime);
 		}
 
-		Clear(olc::BLACK);
+		scene->render(this, fElapsedTime);
+
+		/*Clear(olc::BLACK);
 		DrawString({ 20, 20 }, "fElapsedTime: " + std::to_string(fElapsedTime), olc::Pixel(255, 255, 255), 1);
 		if (sBackground != nullptr) {
 			DrawDecal({ 0, 0 }, sBackground, { 0.25f, 0.25f });
 		}
 		
-		sBird.render(this, fElapsedTime);
+		sBird.render(this, fElapsedTime);*/
 		return true;
 	}
 
@@ -60,9 +64,9 @@ public:
 	}
 
 	void loadAssets() {
-		sBird.init();
+		/*sBird.init();
 		olc::Sprite* bgSprite = new olc::Sprite((std::string)"./assets/images/bg.png");
-		sBackground = new olc::Decal(bgSprite);
+		sBackground = new olc::Decal(bgSprite);*/
 	}
 
 public:
