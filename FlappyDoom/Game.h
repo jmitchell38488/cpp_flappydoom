@@ -17,11 +17,6 @@ private:
 
 	Scene* scene = nullptr;
 
-	////Scene objects;
-	//Bird sBird;
-	////Background sBackground;
-	//olc::Decal* sBackground = nullptr;
-
 public:
 	Game()
 	{
@@ -34,7 +29,6 @@ public:
 	bool OnUserCreate() override
 	{
 		scene->initScene();
-		//loadAssets();
 		return true;
 	}
 
@@ -43,30 +37,14 @@ public:
 		fAccumulatedTime += fElapsedTime;
 		if (fAccumulatedTime > fTickRate) {
 			scene->tick(fElapsedTime);
-			//sBird.update(fElapsedTime);
-			//fScene.tick(fElapsedTime);
 		}
 
 		scene->render(this, fElapsedTime);
-
-		/*Clear(olc::BLACK);
-		DrawString({ 20, 20 }, "fElapsedTime: " + std::to_string(fElapsedTime), olc::Pixel(255, 255, 255), 1);
-		if (sBackground != nullptr) {
-			DrawDecal({ 0, 0 }, sBackground, { 0.25f, 0.25f });
-		}
-		
-		sBird.render(this, fElapsedTime);*/
 		return true;
 	}
 
 	void newGame() {
 
-	}
-
-	void loadAssets() {
-		/*sBird.init();
-		olc::Sprite* bgSprite = new olc::Sprite((std::string)"./assets/images/bg.png");
-		sBackground = new olc::Decal(bgSprite);*/
 	}
 
 public:
