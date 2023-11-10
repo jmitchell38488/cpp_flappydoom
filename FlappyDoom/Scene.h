@@ -51,6 +51,11 @@ bool Scene::tick(float fElapsedTime) {
 	sBird.update(fElapsedTime);
 	sBackground.update(fElapsedTime);
 	sGround.update(fElapsedTime);
+
+	if (sBird.checkCollision()) {
+		setSceneState(SceneState::GAMEOVER);
+	}
+
 	return true;
 }
 

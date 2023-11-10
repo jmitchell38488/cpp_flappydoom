@@ -17,7 +17,7 @@ public:
 
 	Bird();
 	void init();
-	bool isCollision();
+	bool checkCollision();
 	void update(float fElapsedTime);
 	void reset();
 	void setPlaying();
@@ -38,7 +38,17 @@ void Bird::init() {
 	setScale(0.5);
 }
 
-bool Bird::isCollision() {
+bool Bird::checkCollision() {
+	// Check bottom edge collision with ground
+	if (fPosition.y + fColHeight * (1 - fColHeightAdjust) > GAME_HEIGHT - GROUND_HEIGHT) {
+		return true;
+	}
+
+	// Check top edge
+	if (fPosition.y - (fColHeight * 0.5) < 0) {
+		return true;
+	}
+
 	return false;
 }
 

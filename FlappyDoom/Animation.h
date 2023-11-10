@@ -8,7 +8,6 @@ class Animation {
 private:
 	std::vector<olc::Decal*> fFrames = {};
 	int fCurFrameIdx = 0;
-	olc::Decal* fCurFrame = nullptr;
 
 protected:
 	olc::vf2d fPosition;
@@ -19,6 +18,11 @@ protected:
 	float fLastAnimTime = 0.0f;
 
 	float fRotation = 0.0f;
+	olc::Decal* fCurFrame = nullptr;
+
+	float fColHeight;
+	float fColWidth;
+	float fColHeightAdjust = 0.2f;
 
 public: 
 	~Animation() {
@@ -34,6 +38,11 @@ public:
 
 	void setScale(float scale) {
 		fScaleFactor = scale;
+
+		if (fFrames.size() > 0) {
+			fColHeight = fCurFrame->sprite->height * fScaleFactor;
+			fColWidth = fCurFrame->sprite->width * fScaleFactor;
+		}
 	}
 
 	void setPosition(olc::vf2d pos) {
@@ -49,6 +58,9 @@ public:
 		fFrames.push_back(decal);
 
 		if (fFrames.size() == 1) fCurFrame = fFrames[0];
+
+		fColHeight = fCurFrame->sprite->height * fScaleFactor;
+		fColWidth = fCurFrame->sprite->width * fScaleFactor;
 	}
 
 	void update(float fElapsedTime) {
