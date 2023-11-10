@@ -1,6 +1,11 @@
 #pragma once
 
 #include "olcPixelGameEngine.h"
+#include "Settings.h"
+
+enum class BackgroundState {
+	IDLE, SCROLLING
+};
 
 class Background {
 private:
@@ -9,31 +14,30 @@ private:
 	float fHeight = 1.0f;
 
 	olc::vf2d fPosition;
-	olc::Sprite* bgSprite;
-	olc::Decal* bgDecal;
+	olc::Sprite* sBackground;
+	olc::Decal* dBackground;
 
 	float fAnimRate = ANIM_TICK;
 	float fLastAnimTime = 0.0f;
 	float fScrollRate = 0.0f;
-	bool bCanScroll = true;
 
-private:
-	void drawDebugOutline(olc::PixelGameEngine* engine, olc::vf2d pos, olc::Decal* decal, olc::vf2d scale);
+	BackgroundState state = BackgroundState::IDLE;
 
 public:
 	Background() {
-		fAnimRate = 1.0f / 55;
+		fAnimRate = BG_SPEED;
 	}
 
 	void init();
-	void setCanScroll(bool scroll);
 	void update(float fElapsedTime);
 	void render(olc::PixelGameEngine* engine, float fElapsedTime);
+	void setScrolling();
+	void setIdle();
+	void reset();
 };
 
 void Background::update(float fElapsedTime) {
-	if (!bCanScroll) {
-		fLastAnimTime = 0.0f;
+	if (state == BackgroundState::IDLE) {
 		return;
 	}
 
@@ -50,14 +54,13 @@ void Background::update(float fElapsedTime) {
 
 void Background::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 	// Draw frame 1
-	engine->DrawDecal(fPosition, bgDecal, { fScale, fScale });
-	drawDebugOutline(engine, fPosition, bgDecal, { fScale, fScale });
+	engine->DrawDecal(fPosition, dBackground, { fScale, fScale });
 	
 	// Draw frame 2?
 	olc::vf2d newPos = { fPosition.x + fWidth, 0 };
 	if (fPosition.x + fWidth < engine->ScreenWidth()) {
 		// Draw partial decal, not the full decal
-		engine->DrawDecal(newPos, bgDecal, { fScale, fScale });
+		engine->DrawDecal(newPos, dBackground, { fScale, fScale });
 
 	}
 
@@ -65,34 +68,31 @@ void Background::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 	if (fPosition.x + fWidth + fWidth < engine->ScreenWidth()) {
 		olc::vf2d newPos2 = { fPosition.x + fWidth + fWidth, 0 };
 		// Draw partial decal, not the full decal
-		engine->DrawDecal(newPos2, bgDecal, { fScale, fScale });
+		engine->DrawDecal(newPos2, dBackground, { fScale, fScale });
 
 	}
-}
-
-void Background::drawDebugOutline(olc::PixelGameEngine* engine, olc::vf2d pos, olc::Decal* decal, olc::vf2d scale) {
-	int minX = fPosition.x, maxX = bgSprite->width * fScale;
-	int minY = fPosition.y, maxY = bgSprite->height * fScale;
-	// {0,0} -> {1,0} Top left - Top right
-	engine->DrawLine({minX, minY }, { maxX, minY }, olc::RED);
-	// {0,1} -> {1,1} Bottom left - Bottom right
-	engine->DrawLine({ minX, maxY }, { maxX, maxY }, olc::RED);
-	// {0,0} -> {0,1} Top left - Bottom Left
-	engine->DrawLine({ minX, minY }, { minX, maxY }, olc::RED);
-	// {1,0} -> {1,1} Top right - Bottom right
-	engine->DrawLine({ maxX, minY }, { maxX, maxY }, olc::RED);
 }
 
 void Background::init() {
 	fScale = 0.5f;
 
-	bgSprite = new olc::Sprite((std::string)"./assets/images/bg.png");
-	bgDecal = new olc::Decal(bgSprite);
-	fHeight = bgSprite->height * fScale;
-	fWidth = bgSprite->width * fScale;
+	sBackground = new olc::Sprite((std::string)"./assets/images/bg.png");
+	dBackground = new olc::Decal(sBackground);
+	fHeight = sBackground->height * fScale;
+	fWidth = sBackground->width * fScale;
 	fScrollRate = (GAME_TICK) * fWidth/8;
 }
 
-void Background::setCanScroll(bool scroll) {
-	bCanScroll = scroll;
+void Background::setScrolling() {
+	state = BackgroundState::SCROLLING;
+}
+
+void Background::setIdle() {
+	state = BackgroundState::IDLE;
+}
+
+void Background::reset() {
+	fPosition = { 0, 0 };
+	fLastAnimTime = 0.0f;
+	state = BackgroundState::IDLE;
 }

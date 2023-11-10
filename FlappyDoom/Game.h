@@ -16,6 +16,7 @@ private:
 	float fLastAnimTime = 0.0f;
 
 	Scene* scene = nullptr;
+	bool bPlaying = false;
 
 public:
 	Game()
@@ -35,6 +36,30 @@ public:
 	bool OnUserUpdate(float fElapsedTime) override
 	{
 		fAccumulatedTime += fElapsedTime;
+
+		if (GetKey(olc::Key::SPACE).bPressed) {
+			if (!bPlaying) {
+				scene->setSceneState(SceneState::PLAYING);
+				bPlaying = true;
+			}
+		}
+
+		if (GetKey(olc::Key::ENTER).bPressed) {
+			if (bPlaying) {
+				scene->setSceneState(SceneState::IDLE);
+				bPlaying = false;
+			}
+		}
+
+		if (GetKey(olc::Key::ESCAPE).bPressed) {
+			scene->resetScene();
+			bPlaying = false;
+		}
+
+		if (GetKey(olc::Key::Q).bPressed) {
+			exit(0);
+		}
+
 		if (fAccumulatedTime > fTickRate) {
 			scene->tick(fElapsedTime);
 		}
