@@ -1,5 +1,8 @@
 #pragma once
 
+#define OLC_SOUNDWAVE
+#include "olcSoundWaveEngine.h"
+
 #include "Bird.h";
 #include "Fire.h";
 #include "Pipes.h";
@@ -22,10 +25,18 @@ private:
 
 	SceneState state = SceneState::IDLE;
 
+	olc::sound::WaveEngine sEngine;
+	olc::sound::Wave sBgMusic;
+	olc::sound::Wave sBirdFlap;
+	olc::sound::Wave sBirdDeath;
+	olc::sound::Wave sBirdScore;
+
 private:
 	void loadAssets();
 
 public:
+	Scene();
+	~Scene();
 	void initScene();
 	bool tick(float fElapsedTime);
 	void resetScene();
@@ -38,6 +49,11 @@ void Scene::loadAssets() {
 	sBird.init();
 	sBackground.init();
 	sGround.init();
+
+	sBgMusic.LoadAudioWaveform("./assets/sound/theme.wav");
+	sBirdFlap.LoadAudioWaveform("./assets/sound/wing.wav");
+	sBirdDeath.LoadAudioWaveform("./assets/sound/hit.wav");
+	sBirdScore.LoadAudioWaveform("./assets/sound/point.wav");
 }
 
 void Scene::initScene() {
@@ -45,6 +61,8 @@ void Scene::initScene() {
 	sBird.setIdle();
 	sBackground.setIdle();
 	sGround.setIdle();
+	sEngine.PlayWaveform(&sBgMusic);
+	sEngine.SetOutputVolume(0.5f);
 }
 
 bool Scene::tick(float fElapsedTime) {
@@ -53,7 +71,8 @@ bool Scene::tick(float fElapsedTime) {
 	sGround.update(fElapsedTime);
 
 	if (sBird.checkCollision()) {
-		setSceneState(SceneState::GAMEOVER);
+		if (state != SceneState::GAMEOVER)
+			setSceneState(SceneState::GAMEOVER);
 	}
 
 	return true;
@@ -77,7 +96,7 @@ void Scene::resetScene() {
 
 void Scene::setSceneState(SceneState newState) {
 	state = newState;
-	switch (state) {
+	switch (state) { 
 	case SceneState::IDLE:
 		sBird.setIdle();
 		sBackground.setIdle();
@@ -91,12 +110,24 @@ void Scene::setSceneState(SceneState newState) {
 		break;
 
 	case SceneState::GAMEOVER:
+		sEngine.PlayWaveform(&sBirdDeath);
 		sBird.setDead();
 		sBackground.setIdle();
 		sGround.setIdle();
+		break;
 	}
 }
 
 void Scene::jump() {
+	if (state == SceneState::GAMEOVER) return;
 	sBird.flapped();
+	sEngine.PlayWaveform(&sBirdFlap);
+}
+
+Scene::Scene() {
+	sEngine.InitialiseAudio();
+}
+
+Scene::~Scene() {
+	sEngine.DestroyAudio();
 }

@@ -2,6 +2,9 @@
 #include "Settings.h";
 #include "Animation.h";
 
+#define OLC_SOUNDWAVE
+#include "olcSoundWaveEngine.h"
+
 enum class BirdState {
 	IDLE, DEAD, FLAP
 };
@@ -12,6 +15,8 @@ private:
 	BirdState state = BirdState::IDLE;
 
 	float fVelocity = 0.0f;
+
+	bool bFlapped = false;
 
 public:
 
@@ -25,6 +30,7 @@ public:
 	void setIdle();
 	void flapped();
 	void rotate();
+	void score();
 };
 
 Bird::Bird() {
@@ -73,8 +79,8 @@ void Bird::update(float fElapsedTime) {
 }
 
 void Bird::flapped() {
-	if (fPosition.y < 0) return; // don't jump out of bounds
 	fVelocity = -BIRD_JUMP;
+	bFlapped = true;
 }
 
 void Bird::reset() {
@@ -84,6 +90,7 @@ void Bird::reset() {
 	bCanAnimate = false;
 	fVelocity = 0.0f;
 	fRotation = 0.0f;
+	bFlapped = false;
 }
 
 void Bird::setPlaying() {
@@ -104,4 +111,7 @@ void Bird::setIdle() {
 void Bird::rotate() {
 	fRotation = 1.45 * fVelocity;
 	if (fRotation > BIRD_ANGLE / 90) fRotation = BIRD_ANGLE / 90;
+}
+
+void Bird::score() {
 }
