@@ -37,9 +37,9 @@ public:
 
 	void render(olc::PixelGameEngine* engine, float fElapsedTime) {
 		engine->Clear(olc::BLACK);
-		engine->DrawString({ 20, 20 }, "fElapsedTime: " + std::to_string(fElapsedTime), olc::Pixel(255, 255, 255), 1);
 		sBackground.render(engine, fElapsedTime);
 		sBird.render(engine, fElapsedTime);
+		engine->DrawString({ 20, 20 }, "fElapsedTime: " + std::to_string(fElapsedTime), olc::Pixel(255, 255, 255), 1);
 	}
 
 };

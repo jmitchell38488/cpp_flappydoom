@@ -20,7 +20,7 @@ public:
 	void init() {
 		for (int i = 0; i < 5; i++) addFrame(new olc::Sprite((std::string)"./assets/bird/" + std::to_string(i) + ".png"));
 		setPosition(BIRD_ORIG_POS);
-		setScale(0.25);
+		setScale(0.5);
 	}
 
 	bool isCollision() {

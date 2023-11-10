@@ -2,9 +2,9 @@
 
 #include "olcPixelGameEngine.h"
 
-const int GAME_WIDTH = 320;
-const int GAME_HEIGHT = 200;
-const int GAME_PIXEL = 4;
+const int GAME_WIDTH = 800;
+const int GAME_HEIGHT = 450;
+const int GAME_PIXEL = 2;
 
 const int SCROLL_SPEED = 8;
 const float FPS = 60.0f;
