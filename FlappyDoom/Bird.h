@@ -11,7 +11,7 @@ class Bird : public Animation {
 private:
 	BirdState state = BirdState::IDLE;
 
-	float fFallVelocity = 0.0f;
+	float fVelocity = 0.0f;
 
 public:
 
@@ -55,13 +55,14 @@ void Bird::update(float fElapsedTime) {
 	// Update frame
 	Animation::update(fElapsedTime);
 
-	fFallVelocity += GRAVITY_TICK;
-	//fPosition = { fPosition.x + fFallVelocity * 0.5 + GRAVITY, fPosition.y };
-	setPosition({ BIRD_X, (float)(fPosition.y + fFallVelocity * 0.5 + GRAVITY_TICK) });
+	fVelocity += GRAVITY_TICK;
+	//fPosition = { fPosition.x + fVelocity * 0.5 + GRAVITY, fPosition.y };
+	setPosition({ BIRD_X, (float)(fPosition.y + fVelocity * 0.5 + GRAVITY_TICK) });
 }
 
 void Bird::flapped() {
-	fFallVelocity = 0.0f;
+	if (fPosition.y < 0) return; // don't jump out of bounds
+	fVelocity = -10.0f * fAnimRate;
 }
 
 void Bird::reset() {
@@ -69,7 +70,7 @@ void Bird::reset() {
 	setPosition({ BIRD_X, BIRD_Y });
 	state = BirdState::IDLE;
 	bCanAnimate = false;
-	fFallVelocity = 0.0f;
+	fVelocity = 0.0f;
 }
 
 void Bird::setPlaying() {

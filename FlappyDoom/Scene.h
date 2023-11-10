@@ -31,6 +31,7 @@ public:
 	void resetScene();
 	void render(olc::PixelGameEngine* engine, float fElapsedTime);
 	void setSceneState(SceneState newState);
+	void jump();
 };
 
 void Scene::loadAssets() {
@@ -89,4 +90,8 @@ void Scene::setSceneState(SceneState newState) {
 		sBackground.setIdle();
 		sGround.setIdle();
 	}
+}
+
+void Scene::jump() {
+	sBird.flapped();
 }
