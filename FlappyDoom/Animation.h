@@ -18,6 +18,8 @@ protected:
 	float fAnimRate = ANIM_TICK;
 	float fLastAnimTime = 0.0f;
 
+	float fRotation = 0.0f;
+
 public: 
 	~Animation() {
 		// Delete pointers
@@ -77,7 +79,17 @@ public:
 	}
 
 	void render(olc::PixelGameEngine* engine, float fElapsedTime) {
-		engine->DrawDecal(getPosition(), getCurrentFrame(), getScale());
+		if (fRotation == 0) {
+			engine->DrawDecal(fPosition, fCurFrame, getScale());
+		}
+		else {
+			olc::vf2d centre = {
+				fCurFrame->sprite->width / 2 * fScaleFactor,
+				fCurFrame->sprite->height / 2 * fScaleFactor,
+			};
+			engine->DrawRotatedDecal(fPosition, fCurFrame, fRotation, centre, getScale());
+		}
+		
 	}
 
 };

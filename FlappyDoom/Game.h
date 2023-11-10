@@ -42,9 +42,7 @@ public:
 				scene->setSceneState(SceneState::PLAYING);
 				bPlaying = true;
 			}
-			else {
-				scene->jump();
-			}
+			scene->jump();
 		}
 
 		if (GetKey(olc::Key::ENTER).bPressed) {

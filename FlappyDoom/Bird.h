@@ -24,6 +24,7 @@ public:
 	void setDead();
 	void setIdle();
 	void flapped();
+	void rotate();
 };
 
 Bird::Bird() {
@@ -58,11 +59,12 @@ void Bird::update(float fElapsedTime) {
 	fVelocity += GRAVITY_TICK;
 	//fPosition = { fPosition.x + fVelocity * 0.5 + GRAVITY, fPosition.y };
 	setPosition({ BIRD_X, (float)(fPosition.y + fVelocity * 0.5 + GRAVITY_TICK) });
+	rotate();
 }
 
 void Bird::flapped() {
 	if (fPosition.y < 0) return; // don't jump out of bounds
-	fVelocity = -1.0f;
+	fVelocity = -BIRD_JUMP;
 }
 
 void Bird::reset() {
@@ -71,6 +73,7 @@ void Bird::reset() {
 	state = BirdState::IDLE;
 	bCanAnimate = false;
 	fVelocity = 0.0f;
+	fRotation = 0.0f;
 }
 
 void Bird::setPlaying() {
@@ -86,4 +89,9 @@ void Bird::setDead() {
 void Bird::setIdle() {
 	state = BirdState::IDLE;
 	bCanAnimate = false;
+}
+
+void Bird::rotate() {
+	fRotation = 1.45 * fVelocity;
+	if (fRotation > BIRD_ANGLE / 90) fRotation = BIRD_ANGLE / 90;
 }
