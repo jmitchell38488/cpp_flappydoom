@@ -62,7 +62,7 @@ void Bird::update(float fElapsedTime) {
 
 void Bird::flapped() {
 	if (fPosition.y < 0) return; // don't jump out of bounds
-	fVelocity = -10.0f * fAnimRate;
+	fVelocity = -1.0f;
 }
 
 void Bird::reset() {
