@@ -20,6 +20,7 @@ private:
 	float fAnimRate = ANIM_TICK;
 	float fLastAnimTime = 0.0f;
 	float fScrollRate = 0.0f;
+	float fY = 25.0f;
 
 	BackgroundState state = BackgroundState::IDLE;
 
@@ -46,9 +47,9 @@ void Background::update(float fElapsedTime) {
 
 	fLastAnimTime = 0.0f;
 
-	fPosition = { fPosition.x -= fScrollRate, 0 };
+	fPosition = { fPosition.x -= fScrollRate, fY };
 
-	// reposition to 0,0
+	// reposition to 0,fY
 	if (0 > fPosition.x + fWidth) fPosition.x = fPosition.x + fWidth;
 }
 
@@ -57,7 +58,7 @@ void Background::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 	engine->DrawDecal(fPosition, dBackground, { fScale, fScale });
 	
 	// Draw frame 2?
-	olc::vf2d newPos = { fPosition.x + fWidth, 0 };
+	olc::vf2d newPos = { fPosition.x + fWidth, fPosition.y };
 	if (fPosition.x + fWidth < engine->ScreenWidth()) {
 		// Draw partial decal, not the full decal
 		engine->DrawDecal(newPos, dBackground, { fScale, fScale });
@@ -66,7 +67,7 @@ void Background::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 
 	// Draw frame 3?
 	if (fPosition.x + fWidth + fWidth < engine->ScreenWidth()) {
-		olc::vf2d newPos2 = { fPosition.x + fWidth + fWidth, 0 };
+		olc::vf2d newPos2 = { fPosition.x + fWidth + fWidth, fPosition.y };
 		// Draw partial decal, not the full decal
 		engine->DrawDecal(newPos2, dBackground, { fScale, fScale });
 
@@ -81,6 +82,7 @@ void Background::init() {
 	fHeight = sBackground->height * fScale;
 	fWidth = sBackground->width * fScale;
 	fScrollRate = (GAME_TICK) * fWidth/8;
+	fPosition = { 0, fY };
 }
 
 void Background::setScrolling() {
@@ -92,7 +94,7 @@ void Background::setIdle() {
 }
 
 void Background::reset() {
-	fPosition = { 0, 0 };
+	fPosition = { 0, fY };
 	fLastAnimTime = 0.0f;
 	state = BackgroundState::IDLE;
 }

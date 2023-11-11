@@ -144,11 +144,13 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Background.h" />
     <ClInclude Include="Bird.h" />
+    <ClInclude Include="Ceiling.h" />
     <ClInclude Include="Fire.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
     <ClInclude Include="olcSoundWaveEngine.h" />
+    <ClInclude Include="Pipe.h" />
     <ClInclude Include="Pipes.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Settings.h" />

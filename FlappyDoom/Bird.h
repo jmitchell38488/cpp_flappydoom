@@ -51,7 +51,7 @@ bool Bird::checkCollision() {
 	}
 
 	// Check top edge
-	if (fPosition.y - (fColHeight * 0.5) < 0) {
+	if (fPosition.y - (fColHeight * 0.65) < 0) {
 		return true;
 	}
 

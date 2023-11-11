@@ -8,6 +8,8 @@
 #include "Pipes.h";
 #include "Background.h"
 #include "Ground.h"
+#include "Ceiling.h"
+#include "Pipes.h"
 
 enum class SceneState {
 	IDLE, PLAYING, GAMEOVER
@@ -19,6 +21,12 @@ private:
 	Bird sBird;
 	Background sBackground;
 	Ground sGround;
+	Ceiling sCeiling;
+	Pipes sPipes;
+
+	float fFirstPipe = GAME_WIDTH / 1.5;
+	float fPipeGap = GAME_WIDTH / 3;
+
 
 	uint16_t gCurScore;
 	uint16_t gTopScore;
@@ -49,6 +57,8 @@ void Scene::loadAssets() {
 	sBird.init();
 	sBackground.init();
 	sGround.init();
+	sCeiling.init();
+	sPipes.init();
 
 	sBgMusic.LoadAudioWaveform("./assets/sound/theme.wav");
 	sBirdFlap.LoadAudioWaveform("./assets/sound/wing.wav");
@@ -61,14 +71,24 @@ void Scene::initScene() {
 	sBird.setIdle();
 	sBackground.setIdle();
 	sGround.setIdle();
-	sEngine.PlayWaveform(&sBgMusic);
-	sEngine.SetOutputVolume(0.5f);
+	sCeiling.setIdle();
+	sPipes.setIdle();
+
+
+	// Sounds
+	sEngine.InitialiseAudio(88000, 2);
+	sEngine.SetOutputVolume(0.25f);
+	sEngine.PlayWaveform(&sBgMusic, true);
 }
 
 bool Scene::tick(float fElapsedTime) {
+	if (state == SceneState::GAMEOVER) return true;
+
 	sBird.update(fElapsedTime);
 	sBackground.update(fElapsedTime);
 	sGround.update(fElapsedTime);
+	sCeiling.update(fElapsedTime);
+	sPipes.update(fElapsedTime);
 
 	if (sBird.checkCollision()) {
 		if (state != SceneState::GAMEOVER)
@@ -82,6 +102,8 @@ void Scene::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 	engine->Clear(olc::BLACK);
 	sBackground.render(engine, fElapsedTime);
 	sGround.render(engine, fElapsedTime);
+	sCeiling.render(engine, fElapsedTime);
+	sPipes.render(engine, fElapsedTime);
 
 	// Render last z index
 	sBird.render(engine, fElapsedTime);
@@ -91,6 +113,8 @@ void Scene::resetScene() {
 	sBird.reset();
 	sBackground.reset();
 	sGround.reset();
+	sCeiling.reset();
+	sPipes.reset();
 	state = SceneState::IDLE;
 }
 
@@ -101,12 +125,16 @@ void Scene::setSceneState(SceneState newState) {
 		sBird.setIdle();
 		sBackground.setIdle();
 		sGround.setIdle();
+		sCeiling.setIdle();
+		sPipes.setIdle();
 		break;
 
 	case SceneState::PLAYING:
 		sBird.setPlaying();
 		sBackground.setScrolling();
 		sGround.setScrolling();
+		sCeiling.setScrolling();
+		sPipes.setScrolling();
 		break;
 
 	case SceneState::GAMEOVER:
@@ -114,6 +142,8 @@ void Scene::setSceneState(SceneState newState) {
 		sBird.setDead();
 		sBackground.setIdle();
 		sGround.setIdle();
+		sCeiling.setIdle();
+		sPipes.setIdle();
 		break;
 	}
 }
@@ -125,7 +155,7 @@ void Scene::jump() {
 }
 
 Scene::Scene() {
-	sEngine.InitialiseAudio();
+	
 }
 
 Scene::~Scene() {

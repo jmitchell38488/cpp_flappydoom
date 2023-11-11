@@ -48,6 +48,12 @@
     <ClInclude Include="olcSoundWaveEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Ceiling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Pipe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
