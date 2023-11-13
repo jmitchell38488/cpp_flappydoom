@@ -3,9 +3,9 @@
 #define OLC_SOUNDWAVE
 #include "olcSoundWaveEngine.h"
 
-#include "Bird.h";
-#include "Fire.h";
-#include "Pipes.h";
+#include "Bird.h"
+#include "Fire.h"
+#include "Pipes.h"
 #include "Background.h"
 #include "Ground.h"
 #include "Ceiling.h"
@@ -60,10 +60,10 @@ void Scene::loadAssets() {
 	sCeiling.init();
 	sPipes.init();
 
-	sBgMusic.LoadAudioWaveform("./assets/sound/theme.wav");
-	sBirdFlap.LoadAudioWaveform("./assets/sound/wing.wav");
-	sBirdDeath.LoadAudioWaveform("./assets/sound/hit.wav");
-	sBirdScore.LoadAudioWaveform("./assets/sound/point.wav");
+	sBgMusic.LoadAudioWaveform("./assets/sound/theme2.wav");
+	sBirdFlap.LoadAudioWaveform("./assets/sound/wing2.wav");
+	sBirdDeath.LoadAudioWaveform("./assets/sound/hit2.wav");
+	sBirdScore.LoadAudioWaveform("./assets/sound/point2.wav");
 }
 
 void Scene::initScene() {
@@ -101,9 +101,10 @@ bool Scene::tick(float fElapsedTime) {
 void Scene::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 	engine->Clear(olc::BLACK);
 	sBackground.render(engine, fElapsedTime);
+	sPipes.render(engine, fElapsedTime);
 	sGround.render(engine, fElapsedTime);
 	sCeiling.render(engine, fElapsedTime);
-	sPipes.render(engine, fElapsedTime);
+	
 
 	// Render last z index
 	sBird.render(engine, fElapsedTime);

@@ -15,6 +15,7 @@ private:
 
 	float fScrollRate = 0.0f;
 	float fLastAnimTime = 0.0f;
+	float fLastXOffset = 0.0f;
 
 	PipesState state = PipesState::IDLE;
 
@@ -44,6 +45,14 @@ void Pipes::update(float fElapsedTime) {
 	if (fLastAnimTime > GAME_TICK) {
 		fLastAnimTime = 0.0f;
 		fGameScrollPosX += ANIM_TICK;
+
+	for (auto pipe : vPipes) {
+		if (pipe->isPast(fGameScrollPosX) && pipe->traversed) {
+			fLastXOffset += GAME_WIDTH / 2.5;
+			pipe->reset(fLastXOffset);
+		}
+	}
+		
 
 		//for (Pipe* pipe : vPipes) {
 		//	pipe->setOffset()
@@ -75,5 +84,13 @@ void Pipes::reset() {
 bool Pipes::checkCollision(Bird bird) { return false; }
 
 void Pipes::addPipes() {
+	float startOffX = GAME_WIDTH / 2;
+	float stepX = GAME_WIDTH / 3;
 	vPipes.push_back(new Pipe(GAME_WIDTH / 2, 0, dPipe, sPipe->width, sPipe->height));
+	fLastXOffset = startOffX;
+	for (int i = 0; i < 1; i++) {
+		float nextX = fLastXOffset + stepX;
+		vPipes.push_back(new Pipe(nextX, 0, dPipe, sPipe->width, sPipe->height));
+		fLastXOffset = nextX;
+	}
 }

@@ -17,10 +17,10 @@ const float GAME_SPEED = 1.0f / 250.0f;
 const float BG_SPEED = 1.0f / 120.0f;
 
 // Gravity
-const float GRAVITY = 1.0f / 8;
+const float GRAVITY = 1.0f / 4;
 const float GRAVITY_TICK = GRAVITY / FPS; // updates per second
 
 const float BIRD_X = GAME_WIDTH / 4;
 const float BIRD_Y = GAME_HEIGHT / 3;
 const float BIRD_ANGLE = 45.0f;
-const float BIRD_JUMP = 0.75f;
+const float BIRD_JUMP = 1.1f;

@@ -373,3 +373,10 @@ ASALocalRun/
 healthchecksdb
 
 out/
+.vscode/
+CMakeCache.txt
+CMakeFiles/
+build/
+cmake_install.cmake
+Makefile
+.DS_Store
