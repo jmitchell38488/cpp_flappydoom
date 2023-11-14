@@ -17,7 +17,7 @@ private:
   olc::Decal *dPipeBot;
 
   float fScrollRate = 0.0f;
-
+  float fScoreOffX = 0.0f;
   float fPipeStepX = GAME_WIDTH / 3;
 
   PipesState state = PipesState::IDLE;
@@ -31,12 +31,13 @@ protected:
 public:
   Pipes() {}
   void init();
-  void update(float fElapsedTime);
+  void update(float fElapsedTime, float gameSpeed);
   void render(olc::PixelGameEngine *engine, float fElapsedTime);
   void setScrolling();
   void setIdle();
   void reset();
   bool checkCollision(Bird bird);
+  void setScoreOffX(float offX);
 };
 
 void Pipes::init()
@@ -58,19 +59,19 @@ float Pipes::getMaxXOffset() {
 }
 
 
-void Pipes::update(float fElapsedTime)
+void Pipes::update(float fElapsedTime, float gameSpeed)
 {
   if (state == PipesState::SCROLLING)
   {
     for (auto pipe : vPipes)
     {
-      if (pipe->isPast()/* && pipe->bTraversed*/)
+      if (pipe->isPast() && pipe->bTraversed)
       {
         pipe->reset(getMaxXOffset() + fPipeStepX, false);
       }
       else
       {
-        pipe->update(fElapsedTime);
+        pipe->update(fElapsedTime, gameSpeed);
       }
     }
   }
@@ -121,8 +122,12 @@ void Pipes::addPipes()
   
   for (int i = 0; i < 5; i++)
   {
-    vPipes.push_back(new Pipe(nextX, 0, dPipeTop, dPipeBot, i == 0));
+    vPipes.push_back(new Pipe(nextX, 0, dPipeTop, dPipeBot, i == 0, fScoreOffX));
     nextX = fLastXOffset + fPipeStepX;
     fLastXOffset = nextX;
   }
+}
+
+void Pipes::setScoreOffX(float offX) {
+  fScoreOffX = offX;
 }

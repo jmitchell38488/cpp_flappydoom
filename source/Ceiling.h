@@ -19,7 +19,6 @@ private:
 	olc::Decal* dCeiling;
 
 	float fAnimRate = ANIM_TICK;
-	float fScrollRate = 0.0f;
 	float fCeilingY = 0;
 
 	CeilingState state = CeilingState::IDLE;
@@ -30,19 +29,19 @@ public:
 	}
 
 	void init();
-	void update(float fElapsedTime);
+	void update(float fElapsedTime, float gameSpeed);
 	void render(olc::PixelGameEngine* engine, float fElapsedTime);
 	void setScrolling();
 	void setIdle();
 	void reset();
 };
 
-void Ceiling::update(float fElapsedTime) {
+void Ceiling::update(float fElapsedTime, float gameSpeed) {
 	if (state == CeilingState::IDLE) {
 		return;
 	}
 
-	fPosition = { fPosition.x -= fScrollRate, fCeilingY };
+	fPosition = { fPosition.x -= gameSpeed, fCeilingY };
 
 	// reposition to 0,0
 	if (0 > fPosition.x + fWidth) fPosition.x = fPosition.x + fWidth;
@@ -76,7 +75,6 @@ void Ceiling::init() {
 	dCeiling = new olc::Decal(sCeiling);
 	fHeight = sCeiling->height * fScale;
 	fWidth = sCeiling->width * fScale;
-	fScrollRate = SCROLL_SPEED;
 	fPosition = { 0, fCeilingY };
 }
 

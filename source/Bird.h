@@ -31,6 +31,7 @@ public:
 	void flapped();
 	void rotate();
 	void score();
+  float getWidth();
 };
 
 Bird::Bird() {
@@ -42,6 +43,10 @@ void Bird::init() {
 	for (int i = 0; i < 5; i++) addFrame(new olc::Sprite((std::string)"./assets/bird/" + std::to_string(i) + ".png"));
 	setPosition({ BIRD_X, BIRD_Y });
 	setScale(0.5);
+}
+
+float Bird::getWidth() {
+  return fCurFrame->sprite->width * fScaleFactor;
 }
 
 bool Bird::checkCollision() {

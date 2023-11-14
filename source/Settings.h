@@ -1,7 +1,5 @@
 #pragma once
 
-#include "olcPixelGameEngine.h"
-
 const int GAME_WIDTH = 800;
 const int GAME_HEIGHT = 450;
 const int GAME_PIXEL = 2;

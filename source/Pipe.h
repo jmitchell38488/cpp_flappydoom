@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdlib>
+#include "Scene.h"
 
 class Pipe
 {
@@ -8,6 +9,7 @@ private:
   float fScale = 1.0f;
   float fWidth = 1.0f;
   float fHeight = 1.0f;
+  float fScoreOffsetX = 0.0f;
 
   float fOffX = 0.0f;
   float fOffY = 0.0f;
@@ -29,18 +31,18 @@ private:
 
 public:
   Pipe() {}
-  Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, bool first);
-  void setOffset(float offX, float offY);
+  Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, bool first, float scoreX);
+  void setOffset(float offX, float offY, float scoreX);
   bool checkCollision(Bird bird);
   bool isVisible();
   bool isPast();
   void render(olc::PixelGameEngine *engine, float fElapsedTime);
   void reset(float offX, bool first);
-  void update(float fElapsedTime);
+  void update(float fElapsedTime, float gameSpeed);
   float getX();
 };
 
-Pipe::Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, bool first)
+Pipe::Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, bool first, float scoreX)
 {
   fOffX = offX;
   fOffY = offY;
@@ -50,19 +52,22 @@ Pipe::Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, boo
   fHeight = (float)pipeTop->sprite->height;
   fScale = 0.35f;
   bFirst = first;
+  fScoreOffsetX = scoreX;
 
   setOffY(bFirst);
 }
 
-void Pipe::setOffset(float offX, float offY)
+void Pipe::setOffset(float offX, float offY, float scoreX)
 {
   fOffX = offX;
   fOffY = offY;
+  fScoreOffsetX = scoreX;
 }
 
-bool Pipe::checkCollision(Bird bird) { 
-  return false; 
-  }
+bool Pipe::checkCollision(Bird bird)
+{
+  return false;
+}
 
 bool Pipe::isVisible()
 {
@@ -78,21 +83,28 @@ bool Pipe::isPast()
 void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
 {
   float dY = ((fHeight * fScale * 2) - GAME_HEIGHT) / 2;
-  
+
   // // Draw top
   float offY = 0 - dY - fVertGap / 2 + fVertYOffset / 2;
-  olc::vf2d top = {fOffX - fWidth / 2, offY};
+  olc::vf2d top = {fOffX, offY};
   engine->DrawDecal(top, dPipeTop, {fScale, fScale});
 
   // Draw bottom
   float offBy = dPipeTop->sprite->height * fScale + offY + fVertGap;
   // fMidY + fVertGap / 2 + fVertYOffset
-  olc::vf2d bot = {fOffX - fWidth / 2, offBy};
+  olc::vf2d bot = {fOffX, offBy};
   engine->DrawDecal(bot, dPipeBot, {fScale, fScale});
 }
 
-void Pipe::update(float fElapsedTime) {
-  fOffX -= SCROLL_SPEED;
+void Pipe::update(float fElapsedTime, float gameSpeed)
+{
+  fOffX -= gameSpeed;
+
+  // Check if passed
+  if (!bTraversed && fOffX + fWidth * fScale < fScoreOffsetX)
+  {
+    bTraversed = true;
+  }
 }
 
 void Pipe::reset(float offX, bool first)
@@ -105,18 +117,26 @@ void Pipe::reset(float offX, bool first)
   setOffY(first);
 }
 
-void Pipe::setOffY(bool first) {
-  if (first) {
+void Pipe::setOffY(bool first)
+{
+  if (first)
+  {
     fVertYOffset = 0;
     return;
   }
 
-  float inc = std::floor(fVertGap / 4);
-  int offset = (std::rand() % 8) - 4;
-  // float offset = std::round((std::rand() * 1.0 / RAND_MAX * 8) - 4);
+  float inc = std::floor(fVertGap * 1.25 / 2);
+  int offset = (std::rand() % 4) - 2;
   fVertYOffset = inc * offset;
+
+  // Taller than one pipe, readjust
+  if (std::abs(fVertYOffset) > dPipeTop->sprite->height * fScale)
+  {
+    fVertYOffset *= 0.85f;
+  }
 }
 
-float Pipe::getX() {
+float Pipe::getX()
+{
   return fOffX;
 }

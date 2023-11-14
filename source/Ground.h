@@ -18,7 +18,6 @@ private:
 	olc::Decal* dGround;
 
 	float fAnimRate = ANIM_TICK;
-	float fScrollRate = 0.0f;
 	float fGroundY = GAME_HEIGHT - GROUND_HEIGHT;
 
 	GroundState state = GroundState::IDLE;
@@ -29,19 +28,19 @@ public:
 	}
 
 	void init();
-	void update(float fElapsedTime);
+	void update(float fElapsedTime, float gameSpeed);
 	void render(olc::PixelGameEngine* engine, float fElapsedTime);
 	void setScrolling();
 	void setIdle();
 	void reset();
 };
 
-void Ground::update(float fElapsedTime) {
+void Ground::update(float fElapsedTime, float gameSpeed) {
 	if (state == GroundState::IDLE) {
 		return;
 	}
 
-	fPosition = { fPosition.x -= fScrollRate, fGroundY };
+	fPosition = { fPosition.x -= gameSpeed, fGroundY };
 
 	// reposition to 0,0
 	if (0 > fPosition.x + fWidth) fPosition.x = fPosition.x + fWidth;
@@ -75,7 +74,6 @@ void Ground::init() {
 	dGround = new olc::Decal(sGround);
 	fHeight = sGround->height * fScale;
 	fWidth = sGround->width * fScale;
-	fScrollRate = SCROLL_SPEED;
 	fPosition = { 0, fGroundY };
 }
 

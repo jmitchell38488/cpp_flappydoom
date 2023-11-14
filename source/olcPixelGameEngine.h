@@ -879,7 +879,7 @@ namespace olc
 	// O------------------------------------------------------------------------------O
 	// | olc::Renderable - Convenience class to keep a sprite and decal together      |
 	// O------------------------------------------------------------------------------O
-	class Renderable
+class Renderable
 	{
 	public:
 		Renderable() = default;

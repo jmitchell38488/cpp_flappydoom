@@ -10,12 +10,22 @@
 #include "Ground.h"
 #include "Ceiling.h"
 #include "Pipes.h"
-
-enum class SceneState {
-	IDLE, PLAYING, GAMEOVER
-};
+#include "GameState.h"
 
 class Scene {
+public:
+  static Scene& get() {
+    static Scene me;
+    return me;
+  }
+
+  Scene(Scene const&) = delete;
+  void operator=(Scene const&) = delete;
+
+private:
+  Scene();
+  ~Scene();
+
 private:
 	//Scene objects;
 	Bird sBird;
@@ -26,12 +36,10 @@ private:
 
 	float fFirstPipe = GAME_WIDTH / 1.5;
 	float fPipeGap = GAME_WIDTH / 3;
-
+  float fGameDistance = 0.0f;
 
 	uint16_t gCurScore;
 	uint16_t gTopScore;
-
-	SceneState state = SceneState::IDLE;
 
 	olc::sound::WaveEngine sEngine;
 	olc::sound::Wave sBgMusic;
@@ -43,15 +51,14 @@ private:
 	void loadAssets();
 
 public:
-	Scene();
-	~Scene();
 	void initScene();
-	bool tick(float fElapsedTime);
+	float tick(float fElapsedTime, GameDifficulty * difficulty);
 	void resetScene();
 	void render(olc::PixelGameEngine* engine, float fElapsedTime);
-	void setSceneState(SceneState newState);
+	void setGameState(GameState state);
+  bool checkCollisions();
 	void jump();
-  bool isGameOver();
+  void score();
 };
 
 void Scene::loadAssets() {
@@ -75,6 +82,7 @@ void Scene::initScene() {
 	sCeiling.setIdle();
 	sPipes.setIdle();
 
+  sPipes.setScoreOffX(BIRD_X + sBird.getWidth());
 
 	// Sounds
 	sEngine.InitialiseAudio(88000, 2);
@@ -82,30 +90,33 @@ void Scene::initScene() {
 	sEngine.PlayWaveform(&sBgMusic, true);
 }
 
-bool Scene::tick(float fElapsedTime) {
-	if (state == SceneState::GAMEOVER) return true;
+float Scene::tick(float fElapsedTime, GameDifficulty * difficulty) {
+  fGameDistance += difficulty->gameSpeed();
 
 	sBird.update(fElapsedTime);
 	sBackground.update(fElapsedTime);
-	sGround.update(fElapsedTime);
-	sCeiling.update(fElapsedTime);
-	sPipes.update(fElapsedTime);
+	sGround.update(fElapsedTime, difficulty->gameSpeed());
+	sCeiling.update(fElapsedTime, difficulty->gameSpeed());
+	sPipes.update(fElapsedTime, difficulty->gameSpeed());
 
-	if (sBird.checkCollision()) {
-		if (state != SceneState::GAMEOVER)
-			setSceneState(SceneState::GAMEOVER);
-	}
+  return fGameDistance;
+}
 
-	return true;
+bool Scene::checkCollisions() {
+  if (sBird.checkCollision()) {
+    return true;
+  }
+
+  return false;
 }
 
 void Scene::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 	engine->Clear(olc::BLACK);
+
 	sBackground.render(engine, fElapsedTime);
 	sPipes.render(engine, fElapsedTime);
 	sGround.render(engine, fElapsedTime);
 	sCeiling.render(engine, fElapsedTime);
-	
 
 	// Render last z index
 	sBird.render(engine, fElapsedTime);
@@ -117,13 +128,12 @@ void Scene::resetScene() {
 	sGround.reset();
 	sCeiling.reset();
 	sPipes.reset();
-	state = SceneState::IDLE;
+  fGameDistance = 0.0f;
 }
 
-void Scene::setSceneState(SceneState newState) {
-	state = newState;
+void Scene::setGameState(GameState state) {
 	switch (state) { 
-	case SceneState::IDLE:
+	case GameState::IDLE:
 		sBird.setIdle();
 		sBackground.setIdle();
 		sGround.setIdle();
@@ -131,7 +141,7 @@ void Scene::setSceneState(SceneState newState) {
 		sPipes.setIdle();
 		break;
 
-	case SceneState::PLAYING:
+	case GameState::PLAYING:
 		sBird.setPlaying();
 		sBackground.setScrolling();
 		sGround.setScrolling();
@@ -139,7 +149,7 @@ void Scene::setSceneState(SceneState newState) {
 		sPipes.setScrolling();
 		break;
 
-	case SceneState::GAMEOVER:
+	case GameState::GAMEOVER:
 		sEngine.PlayWaveform(&sBirdDeath);
 		sBird.setDead();
 		sBackground.setIdle();
@@ -151,19 +161,16 @@ void Scene::setSceneState(SceneState newState) {
 }
 
 void Scene::jump() {
-	if (state == SceneState::GAMEOVER) return;
 	sBird.flapped();
 	sEngine.PlayWaveform(&sBirdFlap);
 }
 
-Scene::Scene() {
-	
+void Scene::score() {
+  sEngine.PlayWaveform(&sBirdScore);
 }
+
+Scene::Scene() {}
 
 Scene::~Scene() {
 	sEngine.DestroyAudio();
-}
-
-bool Scene::isGameOver() {
-  return state == SceneState::GAMEOVER;
 }
