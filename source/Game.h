@@ -2,8 +2,8 @@
 
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
-#include "Settings.h";
-#include "Scene.h";
+#include "Settings.h"
+#include "Scene.h"
 
 
 // Override base class with your custom functionality
@@ -38,11 +38,16 @@ public:
 		fAccumulatedTime += fElapsedTime;
 
 		if (GetKey(olc::Key::SPACE).bPressed) {
-			if (!bPlaying) {
+      if (scene->isGameOver()) {
+        scene->resetScene();
+        bPlaying = false;
+      } else if (!bPlaying) {
 				scene->setSceneState(SceneState::PLAYING);
 				bPlaying = true;
-			}
-			scene->jump();
+        scene->jump();
+			} else {
+			  scene->jump();
+      }
 		}
 
 		if (GetKey(olc::Key::ENTER).bPressed) {
@@ -61,6 +66,7 @@ public:
 			exit(0);
 		}
 
+    // Update game state 1 / 60
 		if (fAccumulatedTime > fTickRate) {
 			scene->tick(fElapsedTime);
 		}

@@ -51,6 +51,7 @@ public:
 	void render(olc::PixelGameEngine* engine, float fElapsedTime);
 	void setSceneState(SceneState newState);
 	void jump();
+  bool isGameOver();
 };
 
 void Scene::loadAssets() {
@@ -161,4 +162,8 @@ Scene::Scene() {
 
 Scene::~Scene() {
 	sEngine.DestroyAudio();
+}
+
+bool Scene::isGameOver() {
+  return state == SceneState::GAMEOVER;
 }

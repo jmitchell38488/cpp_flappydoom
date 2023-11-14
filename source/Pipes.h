@@ -1,96 +1,128 @@
 #pragma once
 #include "Pipe.h"
 
-enum class PipesState {
-	IDLE, SCROLLING
+enum class PipesState
+{
+  IDLE,
+  SCROLLING
 };
 
-class Pipes {
+class Pipes
+{
 private:
-	float fGameScrollPosX = 0.0f;
+  std::vector<Pipe *> vPipes;
+  olc::Sprite *sPipeTop;
+  olc::Sprite *sPipeBot;
+  olc::Decal *dPipeTop;
+  olc::Decal *dPipeBot;
 
-	std::vector<Pipe*> vPipes;
-	olc::Sprite* sPipe;
-	olc::Decal* dPipe;
+  float fScrollRate = 0.0f;
 
-	float fScrollRate = 0.0f;
-	float fLastAnimTime = 0.0f;
-	float fLastXOffset = 0.0f;
+  float fPipeStepX = GAME_WIDTH / 3;
 
-	PipesState state = PipesState::IDLE;
+  PipesState state = PipesState::IDLE;
+
+private:
+  float getMaxXOffset();
 
 protected:
-	void addPipes();
+  void addPipes();
 
 public:
-	Pipes() {}
-	void init();
-	void update(float fElapsedTime);
-	void render(olc::PixelGameEngine* engine, float fElapsedTime);
-	void setScrolling();
-	void setIdle();
-	void reset();
-	bool checkCollision(Bird bird);
+  Pipes() {}
+  void init();
+  void update(float fElapsedTime);
+  void render(olc::PixelGameEngine *engine, float fElapsedTime);
+  void setScrolling();
+  void setIdle();
+  void reset();
+  bool checkCollision(Bird bird);
 };
 
-void Pipes::init() {
-	sPipe = new olc::Sprite((std::string)"./assets/images/top_pipe.png");
-	dPipe = new olc::Decal(sPipe);
+void Pipes::init()
+{
+  sPipeTop = new olc::Sprite((std::string) "./assets/images/top_pipe.png");
+  dPipeTop = new olc::Decal(sPipeTop);
 
-	addPipes();
-}
-void Pipes::update(float fElapsedTime) {
-	fLastAnimTime += fElapsedTime;
+  sPipeBot = new olc::Sprite((std::string) "./assets/images/bot_pipe.png");
+  dPipeBot = new olc::Decal(sPipeBot);
 
-	if (fLastAnimTime > GAME_TICK) {
-		fLastAnimTime = 0.0f;
-		fGameScrollPosX += ANIM_TICK;
-
-	for (auto pipe : vPipes) {
-		if (pipe->isPast(fGameScrollPosX) && pipe->traversed) {
-			fLastXOffset += GAME_WIDTH / 2.5;
-			pipe->reset(fLastXOffset);
-		}
-	}
-		
-
-		//for (Pipe* pipe : vPipes) {
-		//	pipe->setOffset()
-	}
-}
-void Pipes::render(olc::PixelGameEngine* engine, float fElapsedTime) {
-	for (Pipe* pipe : vPipes) {
-		if (pipe->isPast(fGameScrollPosX)) continue;
-		if (!pipe->isVisible(fGameScrollPosX, GAME_WIDTH)) continue;
-
-		pipe->render(engine, fElapsedTime);
-	}
-}
-void Pipes::setScrolling() {
-	state = PipesState::SCROLLING;
+  addPipes();
 }
 
-void Pipes::setIdle() {
-	state = PipesState::IDLE;
+float Pipes::getMaxXOffset() {
+  // Get max offset x value
+  float maxX = 0.0f;
+  for (auto pipe : vPipes) maxX = pipe->getX() > maxX ? pipe->getX() : maxX;
+  return maxX;
 }
 
-void Pipes::reset() {
-	state = PipesState::IDLE;
-	for (Pipe* pipe : vPipes) delete pipe;
 
-	addPipes();
+void Pipes::update(float fElapsedTime)
+{
+  if (state == PipesState::SCROLLING)
+  {
+    for (auto pipe : vPipes)
+    {
+      if (pipe->isPast()/* && pipe->bTraversed*/)
+      {
+        pipe->reset(getMaxXOffset() + fPipeStepX, false);
+      }
+      else
+      {
+        pipe->update(fElapsedTime);
+      }
+    }
+  }
+}
+void Pipes::render(olc::PixelGameEngine *engine, float fElapsedTime)
+{
+  for (auto pipe : vPipes)
+  {
+    if (pipe->isPast())
+      continue;
+    if (!pipe->isVisible())
+      continue;
+
+    pipe->render(engine, fElapsedTime);
+  }
+}
+void Pipes::setScrolling()
+{
+  state = PipesState::SCROLLING;
+}
+
+void Pipes::setIdle()
+{
+  state = PipesState::IDLE;
+}
+
+void Pipes::reset()
+{
+  state = PipesState::IDLE;
+  float startOffX = GAME_WIDTH * 1.15;
+  float nextX = startOffX;
+  float fLastXOffset = startOffX;
+
+  for (auto pipe : vPipes) {
+    pipe->reset(nextX, pipe == vPipes.front());
+    nextX = fLastXOffset + fPipeStepX;
+    fLastXOffset = nextX;
+  }
 }
 
 bool Pipes::checkCollision(Bird bird) { return false; }
 
-void Pipes::addPipes() {
-	float startOffX = GAME_WIDTH / 2;
-	float stepX = GAME_WIDTH / 3;
-	vPipes.push_back(new Pipe(GAME_WIDTH / 2, 0, dPipe, sPipe->width, sPipe->height));
-	fLastXOffset = startOffX;
-	for (int i = 0; i < 1; i++) {
-		float nextX = fLastXOffset + stepX;
-		vPipes.push_back(new Pipe(nextX, 0, dPipe, sPipe->width, sPipe->height));
-		fLastXOffset = nextX;
-	}
+void Pipes::addPipes()
+{
+  float startOffX = GAME_WIDTH * 1.15;
+  float nextX = startOffX;
+  float fLastXOffset = startOffX;
+  
+  for (int i = 0; i < 5; i++)
+  {
+    vPipes.push_back(new Pipe(nextX, 0, dPipeTop, dPipeBot, i == 0));
+    nextX = fLastXOffset + fPipeStepX;
+    fLastXOffset = nextX;
+  }
 }
