@@ -3,6 +3,8 @@
 
 class GameEngine;
 
+GameEngine * gCommand_Score::gEngine = nullptr;
+
 class gCommand_Score : public gCommand {
   public:
     gCommand_Score();
