@@ -12,9 +12,13 @@
 #include "scene/Ground.h"
 #include "scene/Ceiling.h"
 #include "scene/Pipes.h"
+#include "scene/Pipe.h"
 #include "GameState.h"
 #include "GameDifficulty.h"
 #include "GameScript.h"
+#include "Settings.h"
+
+#include <list>
 
 class GameEngine;
 
@@ -114,6 +118,8 @@ bool GameEngine::initialise()
   gDifficulty->setDifficulty(DifficultyMode::EASY);
   gState = GameState::IDLE;
   bPlaying = false;
+
+  Pipe::gEngine = this;
   return true;
 }
 
@@ -153,14 +159,15 @@ void GameEngine::jump()
 
 bool GameEngine::update(float fElapsedTime)
 {
+  gScriptProcessor->processCommands(fElapsedTime);
   fAccumulatedTime += fElapsedTime;
   if (GetKey(olc::Key::SPACE).bPressed)
   {
-    if (gState == GameState::GAMEOVER)
+    /*if (gState == GameState::GAMEOVER)
     {
       resetGame();
     }
-    else if (!bPlaying)
+    else*/ if (!bPlaying)
     {
       setGameState(GameState::PLAYING);
       gScene->jump();
@@ -234,7 +241,7 @@ void Scene::loadAssets()
   sBackground.init();
   sGround.init();
   sCeiling.init();
-  sPipes.init();
+  sPipes.init(BIRD_X + sBird.getWidth());
 
   sBgMusic.LoadAudioWaveform("./assets/sound/theme2.wav");
   sBirdFlap.LoadAudioWaveform("./assets/sound/wing2.wav");
@@ -250,8 +257,6 @@ void Scene::initScene()
   sGround.setIdle();
   sCeiling.setIdle();
   sPipes.setIdle();
-
-  sPipes.setScoreOffX(BIRD_X + sBird.getWidth());
 
   // Sounds
   sEngine.InitialiseAudio(88000, 2);
@@ -282,19 +287,14 @@ float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
 
 bool Scene::checkCollisions()
 {
-  if (sBird.checkCollision())
-  {
-    return true;
-  }
-
-  return false;
+  return sBird.checkCollisionBounds() || sPipes.checkCollision(&sBird, fGameDistance);
 }
 
 void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
 {
   engine->Clear(olc::BLACK);
 
-  sBackground.render(engine, fElapsedTime);
+  // sBackground.render(engine, fElapsedTime);
   sPipes.render(engine, fElapsedTime);
   sGround.render(engine, fElapsedTime);
   sCeiling.render(engine, fElapsedTime);

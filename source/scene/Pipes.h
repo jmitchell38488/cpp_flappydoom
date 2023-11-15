@@ -30,17 +30,16 @@ protected:
 
 public:
   Pipes() {}
-  void init();
+  void init(float offX);
   void update(float fElapsedTime, float gameSpeed);
   void render(olc::PixelGameEngine *engine, float fElapsedTime);
   void setScrolling();
   void setIdle();
   void reset();
-  bool checkCollision(Bird bird);
-  void setScoreOffX(float offX);
+  bool checkCollision(Bird * bird, float fGameDistance);
 };
 
-void Pipes::init()
+void Pipes::init(float offX)
 {
   sPipeTop = new olc::Sprite((std::string) "./assets/images/top_pipe.png");
   dPipeTop = new olc::Decal(sPipeTop);
@@ -48,6 +47,7 @@ void Pipes::init()
   sPipeBot = new olc::Sprite((std::string) "./assets/images/bot_pipe.png");
   dPipeBot = new olc::Decal(sPipeBot);
 
+  fScoreOffX = offX;
   addPipes();
 }
 
@@ -111,7 +111,18 @@ void Pipes::reset()
   }
 }
 
-bool Pipes::checkCollision(Bird bird) { return false; }
+bool Pipes::checkCollision(Bird * bird, float fGameDistance) {
+  // Pipes check
+  for (auto * pipe : vPipes) {
+    // Skip!
+    if (pipe->bTraversed || !pipe->isVisible()) continue;
+
+    // Only check next pipe, not all!
+    if (pipe->checkCollision(bird, fGameDistance)) return true;
+  }
+
+  return false;
+}
 
 void Pipes::addPipes()
 {
@@ -125,8 +136,4 @@ void Pipes::addPipes()
     nextX = fLastXOffset + fPipeStepX;
     fLastXOffset = nextX;
   }
-}
-
-void Pipes::setScoreOffX(float offX) {
-  fScoreOffX = offX;
 }

@@ -3,13 +3,13 @@
 
 class GameEngine;
 
-GameEngine * gCommand_Score::gEngine = nullptr;
-
 class gCommand_Score : public gCommand {
   public:
     gCommand_Score();
     void start() override;
 };
+
+GameEngine * gCommand_Score::gEngine = nullptr;
 
 gCommand_Score::gCommand_Score() {}
 void gCommand_Score::start() {

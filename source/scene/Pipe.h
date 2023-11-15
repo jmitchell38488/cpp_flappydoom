@@ -1,9 +1,21 @@
 #pragma once
 #include <cstdlib>
 
+#include "BirdData.h"
+
+class GameEngine;
+
+struct PipeColData {
+  float sx;
+  float sy;
+  float sw;
+  float sh;
+  float dx;
+  float dy;
+};
+
 class Pipe
 {
-
 private:
   float fScale = 1.0f;
   float fWidth = 1.0f;
@@ -21,18 +33,29 @@ private:
   olc::Decal *dPipeTop;
   olc::Decal *dPipeBot;
 
+  PipeColData * colDataTop;
+  PipeColData * colDataBot;
+
 public:
   bool bTraversed = false;
   bool bFirst = false;
 
+  static GameEngine * gEngine;
+
 private:
   void setOffY(bool first);
+  void initColData();
+  bool testColPipe(Bird * bird, PipeColData * cd, float fGameDistance);
 
 public:
-  Pipe() {}
+  Pipe() {
+    setOffY(false);
+    initColData();
+  }
+
   Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, bool first, float scoreX);
   void setOffset(float offX, float offY, float scoreX);
-  bool checkCollision(Bird bird);
+  bool checkCollision(Bird * bird, float fGameDistance);
   bool isVisible();
   bool isPast();
   void render(olc::PixelGameEngine *engine, float fElapsedTime);
@@ -40,6 +63,8 @@ public:
   void update(float fElapsedTime, float gameSpeed);
   float getX();
 };
+
+GameEngine * Pipe::gEngine = nullptr;
 
 Pipe::Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, bool first, float scoreX)
 {
@@ -54,6 +79,29 @@ Pipe::Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, boo
   fScoreOffsetX = scoreX;
 
   setOffY(bFirst);
+  initColData();
+}
+
+void Pipe::initColData() {
+  float dY = ((fHeight * fScale * 2) - GAME_HEIGHT) / 2;
+  float offTopY = 0 - dY - fVertGap / 2 + fVertYOffset / 2;
+  float offBotY = dPipeTop->sprite->height * fScale + offTopY + fVertGap;
+
+  colDataTop = new PipeColData();
+  colDataBot = new PipeColData();
+
+  colDataTop->dx = fOffX;
+  colDataBot->dx = fOffX;
+  colDataTop->dy = offTopY;
+  colDataBot->dy = offBotY;
+  colDataTop->sx = fOffX;
+  colDataBot->sx = fOffX;
+  colDataTop->sy = offTopY + dPipeTop->sprite->height * fScale;
+  colDataBot->sy = offBotY;
+  colDataTop->sh = dPipeTop->sprite->height * fScale;
+  colDataBot->sh = dPipeTop->sprite->height * fScale;
+  colDataTop->sw = dPipeTop->sprite->width * fScale;
+  colDataBot->sw = dPipeTop->sprite->width * fScale;
 }
 
 void Pipe::setOffset(float offX, float offY, float scoreX)
@@ -63,15 +111,42 @@ void Pipe::setOffset(float offX, float offY, float scoreX)
   fScoreOffsetX = scoreX;
 }
 
-bool Pipe::checkCollision(Bird bird)
+bool Pipe::checkCollision(Bird * bird, float fGameDistance)
 {
-  return false;
+  // Skip!
+  // if (bTraversed || !isVisible()) return false;
+  return testColPipe(bird, colDataTop, fGameDistance) || testColPipe(bird, colDataBot, fGameDistance);
+}
+
+bool Pipe::testColPipe(Bird * bird, PipeColData * cd, float fGameDistance) {
+  BirdData bd = bird->getBirdColMask();
+  float testX = bd.cx;
+  float testY = bd.cy;
+
+  // Closest edge
+  if (bd.cx < cd->dx)                 testX = cd->dx;           // left edge
+  else if (bd.cx > cd->dx + cd->sw)   testX = cd->dx + cd->sw;  // right edge
+  if (bd.cy < cd->dy)                 testY = cd->dy;           // top edge
+  else if (bd.cy > cd->dy + cd->sh)   testY = cd->dy + cd->sh;  // bottom edge
+
+  // Get distance from edge
+  float distX = bd.cx - testX;
+  float distY = bd.cy - testY;
+  float distance = sqrt((distX * distX) + (distY * distY));
+
+  float t = 1;
+  if (distance <= bd.r) {
+       t++;
+    // do nothing
+  }
+
+  //  If the distance is less than radius
+    return (distance <= bd.r);
 }
 
 bool Pipe::isVisible()
 {
   return !isPast() && fOffX < GAME_WIDTH;
-  // return fOffX > offX && fOffX < offX + sw;
 }
 
 bool Pipe::isPast()
@@ -81,28 +156,24 @@ bool Pipe::isPast()
 
 void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
 {
-  float dY = ((fHeight * fScale * 2) - GAME_HEIGHT) / 2;
-
-  // // Draw top
-  float offY = 0 - dY - fVertGap / 2 + fVertYOffset / 2;
-  olc::vf2d top = {fOffX, offY};
+  olc::vf2d top = {colDataTop->dx, colDataTop->dy};
   engine->DrawDecal(top, dPipeTop, {fScale, fScale});
 
-  // Draw bottom
-  float offBy = dPipeTop->sprite->height * fScale + offY + fVertGap;
-  // fMidY + fVertGap / 2 + fVertYOffset
-  olc::vf2d bot = {fOffX, offBy};
+  olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
   engine->DrawDecal(bot, dPipeBot, {fScale, fScale});
 }
 
 void Pipe::update(float fElapsedTime, float gameSpeed)
 {
   fOffX -= gameSpeed;
+  colDataTop->dx = fOffX;
+  colDataBot->dx = fOffX;
 
   // Check if passed
   if (!bTraversed && fOffX + fWidth * fScale < fScoreOffsetX)
   {
     bTraversed = true;
+    // gEngine->addScore();
   }
 }
 

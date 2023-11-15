@@ -1,6 +1,7 @@
 #pragma once
 #include "../Settings.h"
 #include "Animation.h"
+#include "BirdData.h"
 
 #define OLC_SOUNDWAVE
 #include "../lib/olcSoundWaveEngine.h"
@@ -22,7 +23,7 @@ public:
 
 	Bird();
 	void init();
-	bool checkCollision();
+	bool checkCollisionBounds();
 	void update(float fElapsedTime);
 	void reset();
 	void setPlaying();
@@ -30,8 +31,8 @@ public:
 	void setIdle();
 	void flapped();
 	void rotate();
-	void score();
   float getWidth();
+  BirdData getBirdColMask();
 };
 
 Bird::Bird() {
@@ -49,7 +50,7 @@ float Bird::getWidth() {
   return fCurFrame->sprite->width * fScaleFactor;
 }
 
-bool Bird::checkCollision() {
+bool Bird::checkCollisionBounds() {
 	// Check bottom edge collision with ground
 	if (fPosition.y + fColHeight * (1 - fColHeightAdjust) > GAME_HEIGHT - GROUND_HEIGHT) {
 		return true;
@@ -118,5 +119,15 @@ void Bird::rotate() {
 	if (fRotation > BIRD_ANGLE / 90) fRotation = BIRD_ANGLE / 90;
 }
 
-void Bird::score() {
+BirdData Bird::getBirdColMask() {
+  BirdData bd;
+  bd.cx = fPosition.x + (fCurFrame->sprite->width / 2 * fScaleFactor);
+  bd.cy = fPosition.y + (fCurFrame->sprite->height / 2 * fScaleFactor);
+  bd.dx = fPosition.x;
+  bd.dy = fPosition.y;
+  bd.dw = fCurFrame->sprite->width * fScaleFactor;
+  bd.dh = fCurFrame->sprite->height * fScaleFactor;
+  bd.r = fCurFrame->sprite->width / 2 * fScaleFactor * 0.9;
+
+  return bd;
 }

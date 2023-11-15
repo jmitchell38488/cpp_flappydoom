@@ -12,6 +12,7 @@
 #include "Pipes.h"
 #include "../GameState.h"
 #include "../GameDifficulty.h"
+#include "../Settings.h"
 
 class GameEngine;
 
@@ -104,8 +105,16 @@ float Scene::tick(float fElapsedTime, GameDifficulty * difficulty) {
 }
 
 bool Scene::checkCollisions() {
-  if (sBird.checkCollision()) {
+  // Bounds check
+  if (sBird.checkCollisionBounds()) {
     return true;
+  }
+
+  // Pipes check
+  for (auto * pipe : vPipes) {
+    // Skip!
+    if (pipe->bTraversed || !pipe->isVisible()) continue;
+      
   }
 
   return false;

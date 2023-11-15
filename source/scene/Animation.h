@@ -100,7 +100,11 @@ public:
 			};
 			engine->DrawRotatedDecal(fPosition, fCurFrame, fRotation, centre, getScale());
 		}
-		
+
+    engine->DrawCircle({
+      (int)(fPosition.x + (fCurFrame->sprite->width / 2 * fScaleFactor)),
+      (int)(fPosition.y + (fCurFrame->sprite->height / 2 * fScaleFactor))
+      }, (int)(fCurFrame->sprite->width / 2 * fScaleFactor * 0.9), {0,255,0});
 	}
 
 };
