@@ -1,6 +1,6 @@
 #pragma once
-#include "../Settings.h";
-#include "Animation.h";
+#include "../Settings.h"
+#include "Animation.h"
 
 #define OLC_SOUNDWAVE
 #include "../lib/olcSoundWaveEngine.h"

@@ -58,7 +58,6 @@ float Pipes::getMaxXOffset() {
   return maxX;
 }
 
-
 void Pipes::update(float fElapsedTime, float gameSpeed)
 {
   if (state == PipesState::SCROLLING)

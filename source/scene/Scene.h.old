@@ -11,6 +11,7 @@
 #include "Ceiling.h"
 #include "Pipes.h"
 #include "../GameState.h"
+#include "../GameDifficulty.h"
 
 class GameEngine;
 
@@ -18,6 +19,7 @@ class Scene {
 public:
   Scene();
   ~Scene();
+	Scene(GameEngine * engine);
 
 private:
 	//Scene objects;
@@ -54,7 +56,6 @@ public:
   bool checkCollisions();
 	void jump();
   void score();
-	void setGame(GameEngine * engine);
 };
 
 void Scene::loadAssets() {
@@ -94,6 +95,10 @@ float Scene::tick(float fElapsedTime, GameDifficulty * difficulty) {
 	sGround.update(fElapsedTime, difficulty->gameSpeed());
 	sCeiling.update(fElapsedTime, difficulty->gameSpeed());
 	sPipes.update(fElapsedTime, difficulty->gameSpeed());
+
+	if (checkCollisions()) {
+		gEngine->setGameState(GameState::GAMEOVER);
+	}
 
   return fGameDistance;
 }
@@ -171,6 +176,6 @@ Scene::~Scene() {
 	sEngine.DestroyAudio();
 }
 
-void Scene::setGame(GameEngine * engine) {
+Scene::Scene(GameEngine * engine) {
 	gEngine = engine;
 }
