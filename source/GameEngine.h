@@ -21,13 +21,13 @@ private:
   float fAccumulatedTime = 0.0f;
   float fLastAnimTime = 0.0f;
 
-  GameScriptProcessor * gScriptProcessor = nullptr;
-
 public:
   float fGameScore = 0.0f;
   bool bPlaying = false;
   GameState gState;
   GameDifficulty *gDifficulty = nullptr;
+  Scene * gScene = nullptr;
+  GameScriptProcessor * gScriptProcessor = nullptr;
 
 public:
   bool initialise();
@@ -48,13 +48,16 @@ GameEngine::GameEngine()
   sAppName = "FlappyDOOM";
 
   gDifficulty = new GameDifficulty();
+  gScriptProcessor = new GameScriptProcessor();
+  gScene = new Scene();
+  gScene->setGame(this);
 }
 
 GameEngine::~GameEngine() {}
 
 bool GameEngine::initialise()
 {
-  Scene::get().initScene();
+  gScene->initScene();
   gDifficulty->setDifficulty(DifficultyMode::EASY);
   return true;
 }
@@ -62,7 +65,7 @@ bool GameEngine::initialise()
 void GameEngine::setGameState(GameState state)
 {
   gState = state;
-  Scene::get().setGameState(gState);
+  gScene->setGameState(gState);
 
   if (gState == GameState::GAMEOVER)
     gDifficulty->setDifficulty(DifficultyMode::EASY);
@@ -71,7 +74,7 @@ void GameEngine::setGameState(GameState state)
 void GameEngine::resetGame()
 {
   fGameScore = 0.0f;
-  Scene::get().resetScene();
+  gScene->resetScene();
   bPlaying = false;
   gState = GameState::IDLE;
 }
@@ -79,7 +82,7 @@ void GameEngine::resetGame()
 void GameEngine::addScore()
 {
   if (gState == GameState::GAMEOVER) return;
-  Scene::get().score();
+  gScene->score();
   fGameScore += gDifficulty->gameScore();
 }
 
@@ -97,13 +100,13 @@ bool GameEngine::update(float fElapsedTime)
     }
     else if (!bPlaying)
     {
-      Scene::get().setGameState(GameState::PLAYING);
+      gScene->setGameState(GameState::PLAYING);
       bPlaying = true;
-      Scene::get().jump();
+      gScene->jump();
     }
     else
     {
-      Scene::get().jump();
+      gScene->jump();
     }
   }
 
@@ -111,14 +114,14 @@ bool GameEngine::update(float fElapsedTime)
   {
     if (bPlaying)
     {
-      Scene::get().setGameState(GameState::IDLE);
+      gScene->setGameState(GameState::IDLE);
       bPlaying = false;
     }
   }
 
   if (GetKey(olc::Key::ESCAPE).bPressed)
   {
-    Scene::get().resetScene();
+    gScene->resetScene();
     bPlaying = false;
   }
 
@@ -131,15 +134,17 @@ bool GameEngine::update(float fElapsedTime)
   if (fAccumulatedTime > fTickRate)
   {
     if (gState == GameState::PLAYING) {
-      float fGameDistance = Scene::get().tick(fElapsedTime, gDifficulty);
+      float fGameDistance = gScene->tick(fElapsedTime, gDifficulty);
       gDifficulty->gameUpdate(fGameDistance);
     }
   }
 
-  Scene::get().render(this, fElapsedTime);
+  gScene->render(this, fElapsedTime);
 
   DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(fGameScore)));
   DrawStringDecal({20, 35}, "Difficulty: " + gDifficulty->getMode());
+
+  return true;
 }
 
 void GameEngine::setDifficultyMode(DifficultyMode mode)

@@ -16,17 +16,6 @@ class GameEngine;
 
 class Scene {
 public:
-  static Scene& get() {
-    static Scene me;
-    return me;
-  }
-
-  Scene(Scene const&) = delete;
-  void operator=(Scene const&) = delete;
-
-	static GameEngine * gEngine;
-
-private:
   Scene();
   ~Scene();
 
@@ -51,6 +40,8 @@ private:
 	olc::sound::Wave sBirdDeath;
 	olc::sound::Wave sBirdScore;
 
+	GameEngine * gEngine = nullptr;
+
 private:
 	void loadAssets();
 
@@ -63,6 +54,7 @@ public:
   bool checkCollisions();
 	void jump();
   void score();
+	void setGame(GameEngine * engine);
 };
 
 void Scene::loadAssets() {
@@ -179,4 +171,6 @@ Scene::~Scene() {
 	sEngine.DestroyAudio();
 }
 
-GameEngine * Scene::gEngine = nullptr;
+void Scene::setGame(GameEngine * engine) {
+	gEngine = engine;
+}
