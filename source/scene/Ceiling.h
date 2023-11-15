@@ -1,8 +1,8 @@
 #pragma once
 #pragma once
 
-#include "olcPixelGameEngine.h"
-#include "Settings.h"
+#include "../lib/olcPixelGameEngine.h"
+#include "../Settings.h"
 
 enum class CeilingState {
 	IDLE, SCROLLING

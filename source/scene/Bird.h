@@ -1,9 +1,9 @@
 #pragma once
-#include "Settings.h";
+#include "../Settings.h";
 #include "Animation.h";
 
 #define OLC_SOUNDWAVE
-#include "olcSoundWaveEngine.h"
+#include "../lib/olcSoundWaveEngine.h"
 
 enum class BirdState {
 	IDLE, DEAD, FLAP

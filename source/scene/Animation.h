@@ -1,7 +1,6 @@
 #pragma once
 
-#include "olcPixelGameEngine.h"
-#include "GameObj.h"
+#include "../lib/olcPixelGameEngine.h"
 
 class Animation {
 

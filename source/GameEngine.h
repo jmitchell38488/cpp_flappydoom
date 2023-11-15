@@ -1,12 +1,12 @@
 #pragma once
 
 #define OLC_PGE_APPLICATION
-#include "olcPixelGameEngine.h"
+#include "lib/olcPixelGameEngine.h"
 #include "Settings.h"
 #include "GameState.h"
 #include "GameDifficulty.h"
 #include "GameScript.h"
-#include "Scene.h"
+#include "scene/Scene.h"
 
 class GameEngine : public olc::PixelGameEngine
 {
@@ -21,7 +21,7 @@ private:
   float fAccumulatedTime = 0.0f;
   float fLastAnimTime = 0.0f;
 
-  GameScriptProcessor gScriptProcessor;
+  GameScriptProcessor * gScriptProcessor = nullptr;
 
 public:
   float fGameScore = 0.0f;
@@ -54,7 +54,6 @@ GameEngine::~GameEngine() {}
 
 bool GameEngine::initialise()
 {
-  gCommand::gEngine = this;
   Scene::get().initScene();
   gDifficulty->setDifficulty(DifficultyMode::EASY);
   return true;

@@ -19,6 +19,8 @@ class gCommand {
     static GameEngine * gEngine;
 };
 
+GameEngine * gCommand::gEngine = nullptr;
+
 class GameScriptProcessor {
   public:
     GameScriptProcessor() {}
@@ -32,17 +34,27 @@ class GameScriptProcessor {
     list<gCommand*> m_listCommands;
 };
 
-class gCommand_Score : public gCommand {
-  public:
-    gCommand_Score();
-    void start() override;
-};
+void GameScriptProcessor::addCommand(gCommand *cmd) {
+  m_listCommands.push_back(cmd);
+}
 
-class gCommand_Difficulty : public gCommand {
-  private:
-    DifficultyMode gMode;
+void GameScriptProcessor::processCommands(float fElapsedTime) {
+  if (m_listCommands.empty()) return;
 
-  public:
-    gCommand_Difficulty(DifficultyMode mode);
-    void start() override;
-};
+  if (!m_listCommands.front()->bCompleted) {
+    if (!m_listCommands.front()->bStarted) {
+      m_listCommands.front()->start();
+    } else {
+      m_listCommands.front()->update(fElapsedTime);
+    }
+  } else {
+    delete m_listCommands.front();
+    m_listCommands.pop_front();
+  }
+}
+
+void GameScriptProcessor::completeCommand() {
+  if (!m_listCommands.empty()) {
+    m_listCommands.front()->bCompleted = true;
+  }
+}

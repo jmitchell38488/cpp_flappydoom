@@ -1,7 +1,7 @@
 #pragma once
 
 #define OLC_SOUNDWAVE
-#include "olcSoundWaveEngine.h"
+#include "../lib/olcSoundWaveEngine.h"
 
 #include "Bird.h"
 #include "Fire.h"
@@ -10,7 +10,9 @@
 #include "Ground.h"
 #include "Ceiling.h"
 #include "Pipes.h"
-#include "GameState.h"
+#include "../GameState.h"
+
+class GameEngine;
 
 class Scene {
 public:
@@ -21,6 +23,8 @@ public:
 
   Scene(Scene const&) = delete;
   void operator=(Scene const&) = delete;
+
+	static GameEngine * gEngine;
 
 private:
   Scene();
@@ -174,3 +178,5 @@ Scene::Scene() {}
 Scene::~Scene() {
 	sEngine.DestroyAudio();
 }
+
+GameEngine * Scene::gEngine = nullptr;
