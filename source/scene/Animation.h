@@ -95,10 +95,11 @@ public:
 		}
 		else {
 			olc::vf2d centre = {
-				fCurFrame->sprite->width / 2 * fScaleFactor,
-				fCurFrame->sprite->height / 2 * fScaleFactor,
+				fCurFrame->sprite->width * 0.5f,
+				fCurFrame->sprite->height * 0.5f,
 			};
-			engine->DrawRotatedDecal(fPosition, fCurFrame, fRotation, centre, getScale());
+      olc::vf2d nPos = { (fCurFrame->sprite->width / 2 * fScaleFactor) + fPosition.x, (fCurFrame->sprite->height / 2 * fScaleFactor) + fPosition.y};
+			engine->DrawRotatedDecal(nPos, fCurFrame, fRotation, centre, getScale());
 		}
 
     engine->DrawCircle({

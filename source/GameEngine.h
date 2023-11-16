@@ -128,11 +128,21 @@ void GameEngine::setGameState(GameState state)
   gState = state;
   gScene->setGameState(gState);
 
-  if (gState == GameState::PLAYING)
-    bPlaying = true;
+  switch (state) {
+    case GameState::PLAYING:
+      bPlaying = true;
+      break;
+    
+    case GameState::IDLE:
+      bPlaying = false;
+      gScene->setGameState(GameState::IDLE);
+      break;
 
-  if (gState == GameState::GAMEOVER)
-    gDifficulty->setDifficulty(DifficultyMode::EASY);
+    case GameState::GAMEOVER:
+      bPlaying = false;
+      gDifficulty->setDifficulty(DifficultyMode::EASY);
+      break;
+  }
 }
 
 void GameEngine::resetGame()
@@ -163,11 +173,11 @@ bool GameEngine::update(float fElapsedTime)
   fAccumulatedTime += fElapsedTime;
   if (GetKey(olc::Key::SPACE).bPressed)
   {
-    /*if (gState == GameState::GAMEOVER)
+    if (gState == GameState::GAMEOVER)
     {
-      resetGame();
+      // resetGame();
     }
-    else*/ if (!bPlaying)
+    else if (!bPlaying)
     {
       setGameState(GameState::PLAYING);
       gScene->jump();
@@ -182,8 +192,7 @@ bool GameEngine::update(float fElapsedTime)
   {
     if (bPlaying)
     {
-      gScene->setGameState(GameState::IDLE);
-      bPlaying = false;
+      setGameState(GameState::IDLE);
     }
   }
 
