@@ -3,6 +3,8 @@
 #define OLC_SOUNDWAVE
 #define OLC_PGE_APPLICATION
 
+#include "definitions.h"
+
 #include "lib/olcSoundWaveEngine.h"
 #include "lib/olcPixelGameEngine.h"
 
@@ -253,7 +255,7 @@ bool GameEngine::OnUserUpdate(float fElapsedTime)
 
 void GameEngine::run()
 {
-  if (Construct(GAME_WIDTH, GAME_HEIGHT, GAME_PIXEL, GAME_PIXEL))
+  if (Construct(GAME_WIDTH, GAME_HEIGHT, GAME_PIXEL, GAME_PIXEL, FULL_SCREEN, false, true))
   {
     Start();
   }
