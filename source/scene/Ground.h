@@ -2,6 +2,7 @@
 
 #include "../lib/olcPixelGameEngine.h"
 #include "../Settings.h"
+#include "../definitions.h"
 
 enum class GroundState {
 	IDLE, SCROLLING
@@ -47,6 +48,7 @@ void Ground::update(float fElapsedTime, float gameSpeed) {
 }
 
 void Ground::render(olc::PixelGameEngine* engine, float fElapsedTime) {
+  #ifndef DEBUG_MODE
 	// Draw frame 1
 	engine->DrawDecal(fPosition, dGround, { fScale, fScale });
 
@@ -65,6 +67,11 @@ void Ground::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 		engine->DrawDecal(newPos2, dGround, { fScale, fScale });
 
 	}
+  #endif // !DEBUG_MODE
+
+  #ifdef DEBUG_MODE
+  engine->DrawRect({0, (int)(GAME_HEIGHT - dGround->sprite->height * fScale)}, {GAME_WIDTH, (int)(dGround->sprite->height * fScale)}, {0, 255, 0});
+  #endif // DEBUG_MODE
 }
 
 void Ground::init() {
@@ -72,6 +79,7 @@ void Ground::init() {
 
 	sGround = new olc::Sprite((std::string)"./assets/images/ground.png");
 	dGround = new olc::Decal(sGround);
+  fScale = (float)GROUND_HEIGHT / (float)sGround->height;
 	fHeight = sGround->height * fScale;
 	fWidth = sGround->width * fScale;
 	fPosition = { 0, fGroundY };

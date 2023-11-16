@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../lib/olcPixelGameEngine.h"
+#include "../definitions.h"
 
 class Animation {
 
@@ -10,6 +11,8 @@ private:
 
 protected:
 	olc::vf2d fPosition;
+  olc::vf2d fRotPosition;
+  olc::vf2d fCentre;
 	bool bCanAnimate = true;
 	float fScaleFactor = 1.0f;
 
@@ -46,6 +49,7 @@ public:
 
 	void setPosition(olc::vf2d pos) {
 		fPosition = pos;
+    fRotPosition = { (fCurFrame->sprite->width / 2 * fScaleFactor) + fPosition.x, (fCurFrame->sprite->height / 2 * fScaleFactor) + fPosition.y};
 	}
 
 	void setAnimRate(float aRate) {
@@ -75,6 +79,12 @@ public:
 		else fCurFrameIdx = 0;
 
 		fCurFrame = fFrames[fCurFrameIdx];
+
+    fCentre = {
+      fCurFrame->sprite->width * 0.5f,
+      fCurFrame->sprite->height * 0.5f,
+    };
+    fRotPosition = { (fCurFrame->sprite->width / 2 * fScaleFactor) + fPosition.x, (fCurFrame->sprite->height / 2 * fScaleFactor) + fPosition.y};
 	}
 
 	olc::Decal* getCurrentFrame() {
@@ -90,22 +100,21 @@ public:
 	}
 
 	void render(olc::PixelGameEngine* engine, float fElapsedTime) {
+    #ifndef DEBUG_MODE
 		if (fRotation == 0) {
 			engine->DrawDecal(fPosition, fCurFrame, getScale());
 		}
 		else {
-			olc::vf2d centre = {
-				fCurFrame->sprite->width * 0.5f,
-				fCurFrame->sprite->height * 0.5f,
-			};
-      olc::vf2d nPos = { (fCurFrame->sprite->width / 2 * fScaleFactor) + fPosition.x, (fCurFrame->sprite->height / 2 * fScaleFactor) + fPosition.y};
-			engine->DrawRotatedDecal(nPos, fCurFrame, fRotation, centre, getScale());
+			engine->DrawRotatedDecal(fRotPosition, fCurFrame, fRotation, fCentre, getScale());
 		}
+    #endif // !DEBUG_MODE
 
+    #ifdef DEBUG_MODE
     engine->DrawCircle({
       (int)(fPosition.x + (fCurFrame->sprite->width / 2 * fScaleFactor)),
       (int)(fPosition.y + (fCurFrame->sprite->height / 2 * fScaleFactor))
       }, (int)(fCurFrame->sprite->width / 2 * fScaleFactor * 0.9), {0,255,0});
+    #endif // DEBUG
 	}
 
 };

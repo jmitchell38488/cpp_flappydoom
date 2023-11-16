@@ -2,6 +2,7 @@
 #include <cstdlib>
 
 #include "BirdData.h"
+#include "../definitions.h"
 
 class GameEngine;
 
@@ -156,11 +157,18 @@ bool Pipe::isPast()
 
 void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
 {
+  #ifndef DEBUG_MODE
   olc::vf2d top = {colDataTop->dx, colDataTop->dy};
   engine->DrawDecal(top, dPipeTop, {fScale, fScale});
 
   olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
   engine->DrawDecal(bot, dPipeBot, {fScale, fScale});
+  #endif // !DEBUG_MODE
+
+  #ifdef DEBUG_MODE
+  engine->DrawRect({(int)colDataTop->dx, (int)colDataTop->dy}, {(int)colDataTop->sw, (int)colDataTop->sh}, {0,0,255});
+  engine->DrawRect({(int)colDataBot->dx, (int)colDataBot->dy}, {(int)colDataBot->sw, (int)colDataBot->sh}, {0,0,255});
+  #endif // DEBUG_MODE
 }
 
 void Pipe::update(float fElapsedTime, float gameSpeed)

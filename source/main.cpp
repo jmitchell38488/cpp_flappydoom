@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "definitions.h"
 
 int main() {
 	GameEngine game;

@@ -3,6 +3,7 @@
 
 #include "../lib/olcPixelGameEngine.h"
 #include "../Settings.h"
+#include "../definitions.h"
 
 enum class CeilingState {
 	IDLE, SCROLLING
@@ -48,6 +49,7 @@ void Ceiling::update(float fElapsedTime, float gameSpeed) {
 }
 
 void Ceiling::render(olc::PixelGameEngine* engine, float fElapsedTime) {
+  #ifndef DEBUG_MODE
 	// Draw frame 1
 	engine->DrawDecal(fPosition, dCeiling, { fScale, fScale });
 
@@ -66,6 +68,11 @@ void Ceiling::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 		engine->DrawDecal(newPos2, dCeiling, { fScale, fScale });
 
 	}
+  #endif // !DEBUG_MODE
+
+  #ifdef DEBUG_MODE
+  engine->DrawRect({0, 0}, {GAME_WIDTH, (int)(dCeiling->sprite->height * fScale)}, {0, 255, 0});
+  #endif // DEBUG_MODE
 }
 
 void Ceiling::init() {
@@ -73,6 +80,7 @@ void Ceiling::init() {
 
 	sCeiling = new olc::Sprite((std::string)"./assets/images/ceiling.png");
 	dCeiling = new olc::Decal(sCeiling);
+  fScale = (float)GROUND_HEIGHT / (float)sCeiling->height;
 	fHeight = sCeiling->height * fScale;
 	fWidth = sCeiling->width * fScale;
 	fPosition = { 0, fCeilingY };

@@ -51,15 +51,14 @@ float Bird::getWidth() {
 }
 
 bool Bird::checkCollisionBounds() {
-	// Check bottom edge collision with ground
-	if (fPosition.y + fColHeight * (1 - fColHeightAdjust) > GAME_HEIGHT - GROUND_HEIGHT) {
-		return true;
-	}
-
-	// Check top edge
-	if (fPosition.y - (fColHeight * 0.65) < 0) {
-		return true;
-	}
+  // Test top
+  if (fPosition.y < GROUND_HEIGHT) {
+    return true;
+  }
+  float dh = fCurFrame->sprite->height * fScaleFactor;
+  if (fPosition.y + dh > GAME_HEIGHT - GROUND_HEIGHT) {
+    return true;
+  }
 
 	return false;
 }
@@ -121,8 +120,8 @@ void Bird::rotate() {
 
 BirdData Bird::getBirdColMask() {
   BirdData bd;
-  bd.cx = fPosition.x + (fCurFrame->sprite->width / 2 * fScaleFactor);
-  bd.cy = fPosition.y + (fCurFrame->sprite->height / 2 * fScaleFactor);
+  bd.cx = fRotPosition.x;
+  bd.cy = fRotPosition.y;
   bd.dx = fPosition.x;
   bd.dy = fPosition.y;
   bd.dw = fCurFrame->sprite->width * fScaleFactor;

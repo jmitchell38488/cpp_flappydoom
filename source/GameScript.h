@@ -15,11 +15,7 @@ class gCommand {
 
     virtual void start() {}
     virtual void update(float fElapsedTime) {}
-
-    static GameEngine * gEngine;
 };
-
-GameEngine * gCommand::gEngine = nullptr;
 
 class GameScriptProcessor {
   public:

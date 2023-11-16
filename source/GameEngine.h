@@ -148,6 +148,7 @@ void GameEngine::setGameState(GameState state)
 void GameEngine::resetGame()
 {
   fGameScore = 0.0f;
+  gDifficulty->setDifficulty(DifficultyMode::EASY);
   gScene->resetScene();
   setGameState(GameState::IDLE);
   bPlaying = false;
@@ -175,7 +176,7 @@ bool GameEngine::update(float fElapsedTime)
   {
     if (gState == GameState::GAMEOVER)
     {
-      // resetGame();
+      resetGame();
     }
     else if (!bPlaying)
     {
@@ -190,9 +191,9 @@ bool GameEngine::update(float fElapsedTime)
 
   if (GetKey(olc::Key::ENTER).bPressed)
   {
-    if (bPlaying)
-    {
-      setGameState(GameState::IDLE);
+    if (gState != GameState::GAMEOVER) {
+      if (bPlaying) setGameState(GameState::IDLE);
+      else setGameState(GameState::PLAYING);
     }
   }
 
@@ -303,7 +304,7 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
 {
   engine->Clear(olc::BLACK);
 
-  // sBackground.render(engine, fElapsedTime);
+  sBackground.render(engine, fElapsedTime);
   sPipes.render(engine, fElapsedTime);
   sGround.render(engine, fElapsedTime);
   sCeiling.render(engine, fElapsedTime);

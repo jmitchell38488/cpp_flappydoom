@@ -2,6 +2,7 @@
 
 #include "../lib/olcPixelGameEngine.h"
 #include "../Settings.h"
+#include "../definitions.h"
 
 enum class BackgroundState {
 	IDLE, SCROLLING
@@ -54,6 +55,7 @@ void Background::update(float fElapsedTime) {
 }
 
 void Background::render(olc::PixelGameEngine* engine, float fElapsedTime) {
+  #ifndef DEBUG_MODE
 	// Draw frame 1
 	engine->DrawDecal(fPosition, dBackground, { fScale, fScale });
 	
@@ -72,6 +74,8 @@ void Background::render(olc::PixelGameEngine* engine, float fElapsedTime) {
 		engine->DrawDecal(newPos2, dBackground, { fScale, fScale });
 
 	}
+  
+  #endif // !DEBUG_MODE
 }
 
 void Background::init() {
