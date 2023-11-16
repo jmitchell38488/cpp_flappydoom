@@ -86,6 +86,8 @@ void Bird::update(float fElapsedTime) {
 void Bird::flapped() {
 	fVelocity = -BIRD_JUMP;
 	bFlapped = true;
+	fCurFrameIdx = 3;
+	fCurFrame = fFrames[fCurFrameIdx];
 }
 
 void Bird::reset() {

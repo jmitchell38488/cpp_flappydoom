@@ -162,8 +162,14 @@ void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
   olc::vf2d top = {colDataTop->dx, colDataTop->dy};
   engine->DrawDecal(top, dPipeTop, {fScale, fScale});
 
+  #ifdef __APPLE__
+  olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
+  engine->DrawDecal(bot, dPipeTop, {fScale, fScale});
+  #endif // __APPLE__
+  #ifndef __APPLE__
   olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
   engine->DrawDecal(bot, dPipeBot, {fScale, fScale});
+  #endif // !__APPLE__
   #endif // !DEBUG_MODE
 
   #ifdef DEBUG_MODE

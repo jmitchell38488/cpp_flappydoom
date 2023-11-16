@@ -4,11 +4,6 @@
 #include "../definitions.h"
 
 class Animation {
-
-private:
-	std::vector<olc::Decal*> fFrames = {};
-	int fCurFrameIdx = 0;
-
 protected:
 	olc::vf2d fPosition;
   olc::vf2d fRotPosition;
@@ -21,6 +16,8 @@ protected:
 
 	float fRotation = 0.0f;
 	olc::Decal* fCurFrame = nullptr;
+	std::vector<olc::Decal*> fFrames = {};
+	int fCurFrameIdx = 0;
 
 	float fColHeight;
 	float fColWidth;
@@ -50,6 +47,10 @@ public:
 	void setPosition(olc::vf2d pos) {
 		fPosition = pos;
     fRotPosition = { (fCurFrame->sprite->width / 2 * fScaleFactor) + fPosition.x, (fCurFrame->sprite->height / 2 * fScaleFactor) + fPosition.y};
+		fCentre = {
+      fCurFrame->sprite->width * 0.5f,
+      fCurFrame->sprite->height * 0.5f,
+    };
 	}
 
 	void setAnimRate(float aRate) {
@@ -79,11 +80,6 @@ public:
 		else fCurFrameIdx = 0;
 
 		fCurFrame = fFrames[fCurFrameIdx];
-
-    fCentre = {
-      fCurFrame->sprite->width * 0.5f,
-      fCurFrame->sprite->height * 0.5f,
-    };
     fRotPosition = { (fCurFrame->sprite->width / 2 * fScaleFactor) + fPosition.x, (fCurFrame->sprite->height / 2 * fScaleFactor) + fPosition.y};
 	}
 

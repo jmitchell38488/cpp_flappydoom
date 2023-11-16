@@ -141,7 +141,6 @@ void GameEngine::setGameState(GameState state)
 
     case GameState::GAMEOVER:
       bPlaying = false;
-      gDifficulty->setDifficulty(DifficultyMode::EASY);
       break;
   }
 }
@@ -209,6 +208,11 @@ bool GameEngine::update(float fElapsedTime)
 
   if (GetKey(olc::Key::ESCAPE).bPressed)
   {
+    if (gState == GameState::GAMEOVER)
+    {
+      if (gScore.score > gScore.topScore) gScore.topScore = gScore.score;
+      gScore.runs++;
+    }
     resetGame();
   }
 
@@ -327,7 +331,6 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
     engine->DrawStringDecal({20, 65}, "New top score!");
   else if (gScore.topScore > 0 && gScore.runs > 0)
     engine->DrawStringDecal({20, 65}, "Top score: " + std::to_string((int)std::round(gScore.topScore)));
-
 
   // Render last z index
   sBird.render(engine, fElapsedTime);
