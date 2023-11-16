@@ -34,6 +34,7 @@ The game is composed of runs. A run is an attempt to navigate the gates. There a
 * `ENTER` to pause the current run
 * `Q` to quit the game
 
+Check `definitions.h` for enabling debug mode and full screen.
 
 [flappy-doom-py]: https://www.youtube.com/watch?v=HISF5Ddx7y4
 [linux-doom]: https://github.com/id-Software/DOOM
