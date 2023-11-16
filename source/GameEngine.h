@@ -176,6 +176,7 @@ bool GameEngine::update(float fElapsedTime)
   if (gScore.newScore) {
     gScore.newScore = false;
     gScore.score += gDifficulty->gameScore();
+    gScene->score();
   }
 
   fAccumulatedTime += fElapsedTime;

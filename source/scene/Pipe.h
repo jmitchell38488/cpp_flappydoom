@@ -167,8 +167,9 @@ void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
   #endif // !DEBUG_MODE
 
   #ifdef DEBUG_MODE
-  engine->DrawRect({(int)colDataTop->dx, (int)colDataTop->dy}, {(int)colDataTop->sw, (int)colDataTop->sh}, {0,0,255});
+  
   engine->DrawRect({(int)colDataBot->dx, (int)colDataBot->dy}, {(int)colDataBot->sw, (int)colDataBot->sh}, {0,0,255});
+  engine->DrawRect({(int)colDataTop->dx, (int)colDataTop->dy}, {(int)colDataTop->sw, (int)colDataTop->sh}, {0,0,255});
   #endif // DEBUG_MODE
 }
 
@@ -183,7 +184,6 @@ void Pipe::update(float fElapsedTime, float gameSpeed)
   {
     bTraversed = true;
     gScore.newScore = true;
-    // gEngine->addScore();
   }
 }
 
