@@ -17,6 +17,7 @@
 #include "GameDifficulty.h"
 #include "GameScript.h"
 #include "Settings.h"
+#include "Score.h"
 
 #include <list>
 
@@ -152,6 +153,7 @@ void GameEngine::resetGame()
   gScene->resetScene();
   setGameState(GameState::IDLE);
   bPlaying = false;
+  gScore.score = 0;
 }
 
 void GameEngine::addScore()
@@ -171,11 +173,18 @@ void GameEngine::jump()
 bool GameEngine::update(float fElapsedTime)
 {
   gScriptProcessor->processCommands(fElapsedTime);
+  if (gScore.newScore) {
+    gScore.newScore = false;
+    gScore.score += gDifficulty->gameScore();
+  }
+
   fAccumulatedTime += fElapsedTime;
   if (GetKey(olc::Key::SPACE).bPressed)
   {
     if (gState == GameState::GAMEOVER)
     {
+      if (gScore.score > gScore.topScore) gScore.topScore = gScore.score;
+      gScore.runs++;
       resetGame();
     }
     else if (!bPlaying)
@@ -309,9 +318,15 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
   sGround.render(engine, fElapsedTime);
   sCeiling.render(engine, fElapsedTime);
 
-  engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gEngine->fGameScore)));
+  // engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gEngine->fGameScore)));
+  engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gScore.score)));
   engine->DrawStringDecal({20, 35}, "Difficulty: " + gEngine->gDifficulty->getMode());
-  engine->DrawStringDecal({20, 50}, "Distance: " + std::to_string((int)fGameDistance));
+  engine->DrawStringDecal({20, 50}, "Runs: " + std::to_string((int)gScore.runs));
+  if (gScore.score > gScore.topScore)
+    engine->DrawStringDecal({20, 65}, "New top score!");
+  else if (gScore.topScore > 0 && gScore.runs > 0)
+    engine->DrawStringDecal({20, 65}, "Top score: " + std::to_string((int)std::round(gScore.topScore)));
+
 
   // Render last z index
   sBird.render(engine, fElapsedTime);

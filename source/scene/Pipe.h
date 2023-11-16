@@ -3,6 +3,7 @@
 
 #include "BirdData.h"
 #include "../definitions.h"
+#include "../Score.h"
 
 class GameEngine;
 
@@ -181,6 +182,7 @@ void Pipe::update(float fElapsedTime, float gameSpeed)
   if (!bTraversed && fOffX + fWidth * fScale < fScoreOffsetX)
   {
     bTraversed = true;
+    gScore.newScore = true;
     // gEngine->addScore();
   }
 }
