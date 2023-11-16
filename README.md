@@ -29,7 +29,7 @@ The game has been tested on OSX & Windows 10. Make sure you bundle the assets al
 ### How to play
 The game is composed of runs. A run is an attempt to navigate the gates. There are 5 difficulty levels, that affect the score the player receives for passing through a gate, and the speed the game plays at.
 
-* `SPACEBAR` to start a new run
+* `SPACEBAR` to start a new run and jump Flappy DOOM
 * `ESCAPE` to reset the current run
 * `ENTER` to pause the current run
 * `Q` to quit the game
