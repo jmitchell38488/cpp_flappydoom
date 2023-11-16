@@ -1,7 +1,7 @@
 # cpp_flappydoom
 
 > [!NOTE]  
-> This is pre-alpha stage game. There may be performance issues when your frame rate drops too low.
+> This is pre-alpha stage game. There _are_ bugs. There will be performance issues and the game will slow down if you enable vsync or suffer a low framerate.
 
 I have created my own version of FlappyDOOM in C++, inspired from the YouTube video [Doom styles Flappy Bird in Python][flappy-doom-py].
 
