@@ -3,6 +3,8 @@
 // #define DEBUG_MODE false
 // #define FULL_SCREEN false
 
+#include "Settings.h"
+
 struct GameSettings {
   bool DEBUG_MODE;
   bool VSYNC_MODE;
@@ -11,7 +13,7 @@ struct GameSettings {
   public:
   GameSettings() {
     DEBUG_MODE = false;
-    VSYNC_MODE = false;
+    VSYNC_MODE = true;
     FS_MODE = false;
   }
 };

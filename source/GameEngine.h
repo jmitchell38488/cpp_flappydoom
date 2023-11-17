@@ -46,6 +46,7 @@ private:
   float fFirstPipe = GAME_WIDTH / 1.5;
   float fPipeGap = GAME_WIDTH / 3;
   float fGameDistance = 0.0f;
+  float fRenders = 0.0f;;
 
   uint16_t gCurScore;
   uint16_t gTopScore;
@@ -88,6 +89,7 @@ private:
   float fAnimRate = ANIM_TICK;
   float fAccumulatedTime = 0.0f;
   float fLastAnimTime = 0.0f;
+  float fLag = 0.0f;
 
 public:
   float fGameScore = 0.0f;
@@ -96,6 +98,10 @@ public:
   GameDifficulty *gDifficulty = nullptr;
   Scene *gScene = nullptr;
   GameScriptProcessor *gScriptProcessor = nullptr;
+
+protected:
+  void handleInput(float fElapsedTime);
+  void doGameUpdate(float fElapsedTime);
 
 public:
   bool initialise();
@@ -179,10 +185,7 @@ void GameEngine::jump()
     return;
 }
 
-bool GameEngine::update(float fElapsedTime)
-{
-  
-  fAccumulatedTime += fElapsedTime;
+void GameEngine::handleInput(float fElapsedTime) {
   if (GetKey(olc::Key::SPACE).bPressed)
   {
     if (gState == GameState::GAMEOVER)
@@ -231,19 +234,36 @@ bool GameEngine::update(float fElapsedTime)
   if (GetKey(olc::Key::F10).bPressed) {
     gSettings.DEBUG_MODE = !gSettings.DEBUG_MODE;
   }
+}
 
-  if (fAccumulatedTime > fTickRate) {
-    gScriptProcessor->processCommands(fAccumulatedTime);
+void GameEngine::doGameUpdate(float fElapsedTime) {
+  while (fAccumulatedTime >= fElapsedTime) {
+    gScriptProcessor->processCommands(fElapsedTime);
+
     if (gScore.newScore) {
       gScore.newScore = false;
       gScore.score += gDifficulty->gameScore();
       gScene->score();
     }
-      float fGameDistance = gScene->tick(fAccumulatedTime, gDifficulty);
-      gDifficulty->gameUpdate(fGameDistance);
-    fAccumulatedTime = 0.0f;
-  }
 
+    float fGameDistance = gScene->tick(fElapsedTime, gDifficulty);
+    gDifficulty->gameUpdate(fGameDistance);
+    fAccumulatedTime -= fElapsedTime;
+  }
+}
+
+bool GameEngine::update(float fElapsedTime)
+{
+  fLag += fElapsedTime;
+  fAccumulatedTime += fElapsedTime;
+  float tick = fAccumulatedTime;
+
+  if (fAccumulatedTime < 0) fAccumulatedTime = 0.0f;
+  if (fLag < 0) fLag = 0.0f;
+
+  handleInput(fAccumulatedTime);
+  doGameUpdate(GAME_TICK);
+  
   gScene->render(this, fElapsedTime);
 
   return true;
@@ -329,6 +349,7 @@ bool Scene::checkCollisions()
 
 void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
 {
+  fRenders++;
   engine->Clear(olc::BLACK);
 
   sBackground.render(engine, fElapsedTime);
