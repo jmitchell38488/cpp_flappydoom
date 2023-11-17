@@ -42,7 +42,7 @@ public:
     {
     case DifficultyMode::EASY:
       bDiffChange = true;
-      fGameSpeed = 3.0f * ANIM_TICK;
+      fGameSpeed = 3.0f;
       fGameDistance = GAME_WIDTH * 2;
       fGameScore = 1.0f;
       mMode = mode;
@@ -51,7 +51,7 @@ public:
 
     case DifficultyMode::MEDIUM:
       bDiffChange = true;
-      fGameSpeed = 3.75f * ANIM_TICK;
+      fGameSpeed = 3.75f;
       fGameDistance = GAME_WIDTH * 4;
       fGameScore = 1.0f;
       mMode = mode;
@@ -60,7 +60,7 @@ public:
 
     case DifficultyMode::HARD:
       bDiffChange = true;
-      fGameSpeed = 4.5f * ANIM_TICK;
+      fGameSpeed = 4.5f;
       fGameDistance = GAME_WIDTH * 6;
       fGameScore = 1.5f;
       mMode = mode;
@@ -69,7 +69,7 @@ public:
 
     case DifficultyMode::NIGHTMARE:
       bDiffChange = true;
-      fGameSpeed = 5.75f * ANIM_TICK;
+      fGameSpeed = 5.75f;
       fGameDistance = GAME_WIDTH * 8;
       fGameScore = 4.0f;
       mMode = mode;
@@ -78,7 +78,7 @@ public:
 
     case DifficultyMode::IMPOSSIBLE:
       bDiffChange = true;
-      fGameSpeed = 8.0f * ANIM_TICK;
+      fGameSpeed = 8.0f;
       fGameDistance = GAME_WIDTH * 10;
       fGameScore = 10.0f;
       mMode = mode;

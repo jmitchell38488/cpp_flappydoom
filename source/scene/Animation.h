@@ -70,16 +70,13 @@ public:
 	void update(float fElapsedTime) {
 		fLastAnimTime += fElapsedTime;
 
-		if (fLastAnimTime < fAnimRate) return;
-		if (fFrames.size() < 1) return;
+		if (fLastAnimTime >= fAnimRate && fFrames.size() > 0 && bCanAnimate) {
+      if (fCurFrameIdx + 1 < fFrames.size()) fCurFrameIdx++;
+		  else fCurFrameIdx = 0;
+      fCurFrame = fFrames[fCurFrameIdx];
+      fLastAnimTime = 0.0f;
+    }
 
-		fLastAnimTime = 0.0f;
-
-		if (!bCanAnimate) return;
-		if ((fCurFrameIdx +1 ) < fFrames.size()) fCurFrameIdx++;
-		else fCurFrameIdx = 0;
-
-		fCurFrame = fFrames[fCurFrameIdx];
     fRotPosition = { (fCurFrame->sprite->width / 2 * fScaleFactor) + fPosition.x, (fCurFrame->sprite->height / 2 * fScaleFactor) + fPosition.y};
 	}
 
@@ -96,21 +93,21 @@ public:
 	}
 
 	void render(olc::PixelGameEngine* engine, float fElapsedTime) {
-    #ifndef DEBUG_MODE
-		if (fRotation == 0) {
-			engine->DrawDecal(fPosition, fCurFrame, getScale());
-		}
-		else {
-			engine->DrawRotatedDecal(fRotPosition, fCurFrame, fRotation, fCentre, getScale());
-		}
-    #endif // !DEBUG_MODE
+    if (!gSettings.DEBUG_MODE) {
+      if (fRotation == 0) {
+        engine->DrawDecal(fPosition, fCurFrame, getScale());
+      }
+      else {
+        engine->DrawRotatedDecal(fRotPosition, fCurFrame, fRotation, fCentre, getScale());
+      }
+    }
 
-    #ifdef DEBUG_MODE
-    engine->DrawCircle({
-      (int)(fPosition.x + (fCurFrame->sprite->width / 2 * fScaleFactor)),
-      (int)(fPosition.y + (fCurFrame->sprite->height / 2 * fScaleFactor))
-      }, (int)(fCurFrame->sprite->width / 2 * fScaleFactor * 0.9), {0,255,0});
-    #endif // DEBUG
+    if (gSettings.DEBUG_MODE) {
+      engine->DrawCircle({
+        (int)(fPosition.x + (fCurFrame->sprite->width / 2 * fScaleFactor)),
+        (int)(fPosition.y + (fCurFrame->sprite->height / 2 * fScaleFactor))
+        }, (int)(fCurFrame->sprite->width / 2 * fScaleFactor * 0.9), {0,255,0});
+    }
 	}
 
 };

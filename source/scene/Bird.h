@@ -3,9 +3,6 @@
 #include "Animation.h"
 #include "BirdData.h"
 
-#define OLC_SOUNDWAVE
-#include "../lib/olcSoundWaveEngine.h"
-
 enum class BirdState {
 	IDLE, DEAD, FLAP
 };
@@ -64,23 +61,21 @@ bool Bird::checkCollisionBounds() {
 }
 
 void Bird::update(float fElapsedTime) {
-	float localTick = fLastAnimTime + fElapsedTime;
-	if (state == BirdState::DEAD) {
+	if (state == BirdState::DEAD || !bCanAnimate) {
 		return;
 	}
 
 	// Bob up and down on a sin wave
-	if (state == BirdState::IDLE) {
-		return;
-	}
+	// if (state == BirdState::IDLE) {
+	// 	return;
+	// }
 
 	// Update frame
 	Animation::update(fElapsedTime);
 
 	fVelocity += GRAVITY_TICK;
-	//fPosition = { fPosition.x + fVelocity * 0.5 + GRAVITY, fPosition.y };
-	setPosition({ BIRD_X, (float)(fPosition.y + fVelocity * 0.5 + GRAVITY_TICK) });
-	rotate();
+  setPosition({ BIRD_X, (float)(fPosition.y + fVelocity * 0.5 + GRAVITY_TICK) });
+  rotate();
 }
 
 void Bird::flapped() {
@@ -88,6 +83,7 @@ void Bird::flapped() {
 	bFlapped = true;
 	fCurFrameIdx = 3;
 	fCurFrame = fFrames[fCurFrameIdx];
+  fLastAnimTime = 0.0f;
 }
 
 void Bird::reset() {
@@ -116,7 +112,7 @@ void Bird::setIdle() {
 }
 
 void Bird::rotate() {
-	fRotation = 1.45 * fVelocity;
+	fRotation = 0.15 * fVelocity;
 	if (fRotation > BIRD_ANGLE / 90) fRotation = BIRD_ANGLE / 90;
 }
 

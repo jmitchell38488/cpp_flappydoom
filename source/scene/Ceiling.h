@@ -49,30 +49,30 @@ void Ceiling::update(float fElapsedTime, float gameSpeed) {
 }
 
 void Ceiling::render(olc::PixelGameEngine* engine, float fElapsedTime) {
-  #ifndef DEBUG_MODE
-	// Draw frame 1
-	engine->DrawDecal(fPosition, dCeiling, { fScale, fScale });
+  if (!gSettings.DEBUG_MODE) {
+    // Draw frame 1
+    engine->DrawDecal(fPosition, dCeiling, { fScale, fScale });
 
-	// Draw frame 2?
-	olc::vf2d newPos = { fPosition.x + fWidth, fPosition.y };
-	if (fPosition.x + fWidth < engine->ScreenWidth()) {
-		// Draw partial decal, not the full decal
-		engine->DrawDecal(newPos, dCeiling, { fScale, fScale });
+    // Draw frame 2?
+    olc::vf2d newPos = { fPosition.x + fWidth, fPosition.y };
+    if (fPosition.x + fWidth < engine->ScreenWidth()) {
+      // Draw partial decal, not the full decal
+      engine->DrawDecal(newPos, dCeiling, { fScale, fScale });
 
-	}
+    }
 
-	// Draw frame 3?
-	if (fPosition.x + fWidth + fWidth < engine->ScreenWidth()) {
-		olc::vf2d newPos2 = { fPosition.x + fWidth + fWidth, fPosition.y };
-		// Draw partial decal, not the full decal
-		engine->DrawDecal(newPos2, dCeiling, { fScale, fScale });
+    // Draw frame 3?
+    if (fPosition.x + fWidth + fWidth < engine->ScreenWidth()) {
+      olc::vf2d newPos2 = { fPosition.x + fWidth + fWidth, fPosition.y };
+      // Draw partial decal, not the full decal
+      engine->DrawDecal(newPos2, dCeiling, { fScale, fScale });
 
-	}
-  #endif // !DEBUG_MODE
+    }
+  }
 
-  #ifdef DEBUG_MODE
-  engine->DrawRect({0, 0}, {GAME_WIDTH, (int)(dCeiling->sprite->height * fScale)}, {0, 255, 0});
-  #endif // DEBUG_MODE
+  if (gSettings.DEBUG_MODE) {
+    engine->DrawRect({0, 0}, {GAME_WIDTH, (int)(dCeiling->sprite->height * fScale)}, {0, 255, 0});
+  }
 }
 
 void Ceiling::init() {

@@ -158,25 +158,24 @@ bool Pipe::isPast()
 
 void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
 {
-  #ifndef DEBUG_MODE
-  olc::vf2d top = {colDataTop->dx, colDataTop->dy};
-  engine->DrawDecal(top, dPipeTop, {fScale, fScale});
+  if (!gSettings.DEBUG_MODE) {
+    olc::vf2d top = {colDataTop->dx, colDataTop->dy};
+    engine->DrawDecal(top, dPipeTop, {fScale, fScale});
 
-  #ifdef __APPLE__
-  olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
-  engine->DrawDecal(bot, dPipeTop, {fScale, fScale});
-  #endif // __APPLE__
-  #ifndef __APPLE__
-  olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
-  engine->DrawDecal(bot, dPipeBot, {fScale, fScale});
-  #endif // !__APPLE__
-  #endif // !DEBUG_MODE
+    #ifdef __APPLE__
+    olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
+    engine->DrawDecal(bot, dPipeTop, {fScale, fScale});
+    #endif // __APPLE__
+    #ifndef __APPLE__
+    olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
+    engine->DrawDecal(bot, dPipeBot, {fScale, fScale});
+    #endif // !__APPLE__
+  }
 
-  #ifdef DEBUG_MODE
-  
-  engine->DrawRect({(int)colDataBot->dx, (int)colDataBot->dy}, {(int)colDataBot->sw, (int)colDataBot->sh}, {0,0,255});
-  engine->DrawRect({(int)colDataTop->dx, (int)colDataTop->dy}, {(int)colDataTop->sw, (int)colDataTop->sh}, {0,0,255});
-  #endif // DEBUG_MODE
+  if (gSettings.DEBUG_MODE) {
+    engine->DrawRect({(int)colDataBot->dx, (int)colDataBot->dy}, {(int)colDataBot->sw, (int)colDataBot->sh}, {0,0,255});
+    engine->DrawRect({(int)colDataTop->dx, (int)colDataTop->dy}, {(int)colDataTop->sw, (int)colDataTop->sh}, {0,0,255});
+  }
 }
 
 void Pipe::update(float fElapsedTime, float gameSpeed)

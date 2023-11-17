@@ -43,39 +43,34 @@ void Background::update(float fElapsedTime) {
 		return;
 	}
 
-	fLastAnimTime += fElapsedTime;
-	if (fLastAnimTime < fAnimRate) return;
-
-	fLastAnimTime = 0.0f;
-
-	fPosition = { fPosition.x -= fScrollRate, fY };
+	fPosition = { (fPosition.x -= fScrollRate) * 1 + fElapsedTime, fY };
 
 	// reposition to 0,fY
 	if (0 > fPosition.x + fWidth) fPosition.x = fPosition.x + fWidth;
 }
 
 void Background::render(olc::PixelGameEngine* engine, float fElapsedTime) {
-  #ifndef DEBUG_MODE
-	// Draw frame 1
-	engine->DrawDecal(fPosition, dBackground, { fScale, fScale });
-	
-	// Draw frame 2?
-	olc::vf2d newPos = { fPosition.x + fWidth, fPosition.y };
-	if (fPosition.x + fWidth < engine->ScreenWidth()) {
-		// Draw partial decal, not the full decal
-		engine->DrawDecal(newPos, dBackground, { fScale, fScale });
+  if (!gSettings.DEBUG_MODE) {
+    // Draw frame 1
+    engine->DrawDecal(fPosition, dBackground, { fScale, fScale });
+    
+    // Draw frame 2?
+    olc::vf2d newPos = { fPosition.x + fWidth, fPosition.y };
+    if (fPosition.x + fWidth < engine->ScreenWidth()) {
+      // Draw partial decal, not the full decal
+      engine->DrawDecal(newPos, dBackground, { fScale, fScale });
 
-	}
+    }
 
-	// Draw frame 3?
-	if (fPosition.x + fWidth + fWidth < engine->ScreenWidth()) {
-		olc::vf2d newPos2 = { fPosition.x + fWidth + fWidth, fPosition.y };
-		// Draw partial decal, not the full decal
-		engine->DrawDecal(newPos2, dBackground, { fScale, fScale });
+    // Draw frame 3?
+    if (fPosition.x + fWidth + fWidth < engine->ScreenWidth()) {
+      olc::vf2d newPos2 = { fPosition.x + fWidth + fWidth, fPosition.y };
+      // Draw partial decal, not the full decal
+      engine->DrawDecal(newPos2, dBackground, { fScale, fScale });
 
-	}
-  
-  #endif // !DEBUG_MODE
+    }
+
+  }
 }
 
 void Background::init() {
@@ -85,7 +80,7 @@ void Background::init() {
 	dBackground = new olc::Decal(sBackground);
 	fHeight = sBackground->height * fScale;
 	fWidth = sBackground->width * fScale;
-	fScrollRate = (GAME_TICK) * fWidth/8;
+	fScrollRate = (GAME_TICK) * fWidth / 7.75f;
 	fPosition = { 0, fY };
 }
 

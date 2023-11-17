@@ -1,13 +1,15 @@
 #pragma once
 
 #define OLC_SOUNDWAVE
+#define OLC_PGEX_MINIAUDIO
+
+#include "lib/miniaudio.h"
+#include "lib/olcPGEX_MiniAudio.h"
+
 #define OLC_PGE_APPLICATION
-
-#include "definitions.h"
-
-#include "lib/olcSoundWaveEngine.h"
 #include "lib/olcPixelGameEngine.h"
 
+#include "definitions.h"
 #include "scene/Bird.h"
 #include "scene/Fire.h"
 #include "scene/Background.h"
@@ -18,6 +20,7 @@
 #include "GameState.h"
 #include "GameDifficulty.h"
 #include "GameScript.h"
+// #include "GameAudio.h"
 #include "Settings.h"
 #include "Score.h"
 
@@ -47,13 +50,17 @@ private:
   uint16_t gCurScore;
   uint16_t gTopScore;
 
-  olc::sound::WaveEngine sEngine;
-  olc::sound::Wave sBgMusic;
-  olc::sound::Wave sBirdFlap;
-  olc::sound::Wave sBirdDeath;
-  olc::sound::Wave sBirdScore;
-
   GameEngine *gEngine = nullptr;
+
+  int aBgMusic;
+  int aBirdFlap;
+  int aBirdDeath;
+  int aBirdScore;
+
+  olc::MiniAudio ma;
+
+  float aVol = 0.25f;
+  int upCounter = 0;
 
 private:
   void loadAssets();
@@ -113,7 +120,8 @@ GameEngine::GameEngine()
   gScene = new Scene(this);
 }
 
-GameEngine::~GameEngine() {}
+GameEngine::~GameEngine() {
+}
 
 bool GameEngine::initialise()
 {
@@ -173,13 +181,7 @@ void GameEngine::jump()
 
 bool GameEngine::update(float fElapsedTime)
 {
-  gScriptProcessor->processCommands(fElapsedTime);
-  if (gScore.newScore) {
-    gScore.newScore = false;
-    gScore.score += gDifficulty->gameScore();
-    gScene->score();
-  }
-
+  
   fAccumulatedTime += fElapsedTime;
   if (GetKey(olc::Key::SPACE).bPressed)
   {
@@ -204,7 +206,10 @@ bool GameEngine::update(float fElapsedTime)
   {
     if (gState != GameState::GAMEOVER) {
       if (bPlaying) setGameState(GameState::IDLE);
-      else setGameState(GameState::PLAYING);
+      else {
+        setGameState(GameState::PLAYING);
+        fAccumulatedTime = fElapsedTime;
+      }
     }
   }
 
@@ -223,14 +228,20 @@ bool GameEngine::update(float fElapsedTime)
     exit(0);
   }
 
-  // Update game state 1 / 60
-  if (fAccumulatedTime > fTickRate)
-  {
-    if (gState == GameState::PLAYING)
-    {
-      float fGameDistance = gScene->tick(fElapsedTime, gDifficulty);
-      gDifficulty->gameUpdate(fGameDistance);
+  if (GetKey(olc::Key::F10).bPressed) {
+    gSettings.DEBUG_MODE = !gSettings.DEBUG_MODE;
+  }
+
+  if (fAccumulatedTime > fTickRate) {
+    gScriptProcessor->processCommands(fAccumulatedTime);
+    if (gScore.newScore) {
+      gScore.newScore = false;
+      gScore.score += gDifficulty->gameScore();
+      gScene->score();
     }
+      float fGameDistance = gScene->tick(fAccumulatedTime, gDifficulty);
+      gDifficulty->gameUpdate(fGameDistance);
+    fAccumulatedTime = 0.0f;
   }
 
   gScene->render(this, fElapsedTime);
@@ -255,7 +266,7 @@ bool GameEngine::OnUserUpdate(float fElapsedTime)
 
 void GameEngine::run()
 {
-  if (Construct(GAME_WIDTH, GAME_HEIGHT, GAME_PIXEL, GAME_PIXEL, FULL_SCREEN, false, true))
+  if (Construct(GAME_WIDTH, GAME_HEIGHT, GAME_PIXEL, GAME_PIXEL, gSettings.FS_MODE, gSettings.VSYNC_MODE, true))
   {
     Start();
   }
@@ -268,11 +279,6 @@ void Scene::loadAssets()
   sGround.init();
   sCeiling.init();
   sPipes.init(BIRD_X + sBird.getWidth());
-
-  sBgMusic.LoadAudioWaveform("./assets/sound/theme2.wav");
-  sBirdFlap.LoadAudioWaveform("./assets/sound/wing2.wav");
-  sBirdDeath.LoadAudioWaveform("./assets/sound/hit2.wav");
-  sBirdScore.LoadAudioWaveform("./assets/sound/point2.wav");
 }
 
 void Scene::initScene()
@@ -282,28 +288,33 @@ void Scene::initScene()
   sBackground.setIdle();
   sGround.setIdle();
   sCeiling.setIdle();
-  sPipes.setIdle();
+  sPipes.setIdle(); 
 
-  // Sounds
-  sEngine.InitialiseAudio(88000, 2);
-  sEngine.SetOutputVolume(0.25f);
-  sEngine.PlayWaveform(&sBgMusic, true);
+  aBgMusic = ma.LoadSound("./assets/sound/theme.mp3");
+  aBirdFlap = ma.LoadSound("./assets/sound/wing2.wav");
+  aBirdDeath = ma.LoadSound("./assets/sound/hit2.wav");
+  aBirdScore = ma.LoadSound("./assets/sound/point2.wav");
+  
+  ma.SetVolume(aBgMusic, aVol);
+
+  if (!ma.IsPlaying(aBgMusic)) ma.Play(aBgMusic, true);
 }
 
 float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
 {
+  upCounter++;
   if (gEngine->gState == GameState::PLAYING)
   {
     fGameDistance += difficulty->gameSpeed();
     sBackground.update(fElapsedTime);
-    sGround.update(fElapsedTime, difficulty->gameSpeed());
-    sCeiling.update(fElapsedTime, difficulty->gameSpeed());
-    sPipes.update(fElapsedTime, difficulty->gameSpeed());
+    sGround.update(fElapsedTime, difficulty->gameSpeed() * 1+fElapsedTime/2);
+    sCeiling.update(fElapsedTime, difficulty->gameSpeed() * 1+fElapsedTime/2);
+    sPipes.update(fElapsedTime, difficulty->gameSpeed() * 1+fElapsedTime/2);
   }
 
   sBird.update(fElapsedTime);
 
-  if (checkCollisions())
+  if (checkCollisions() && gEngine->gState == GameState::PLAYING)
   {
     gEngine->setGameState(GameState::GAMEOVER);
   }
@@ -369,7 +380,9 @@ void Scene::setGameState(GameState state)
     break;
 
   case GameState::GAMEOVER:
-    sEngine.PlayWaveform(&sBirdDeath);
+    if (!ma.IsPlaying(aBirdDeath)) ma.Stop(aBirdDeath);
+    ma.Play(aBirdDeath);
+
     sBird.setDead();
     sBackground.setIdle();
     sGround.setIdle();
@@ -382,19 +395,30 @@ void Scene::setGameState(GameState state)
 void Scene::jump()
 {
   sBird.flapped();
-  sEngine.PlayWaveform(&sBirdFlap);
+  if (!ma.IsPlaying(aBirdFlap)) ma.Stop(aBirdFlap);
+  ma.Play(aBirdFlap);
 }
 
 void Scene::score()
 {
-  sEngine.PlayWaveform(&sBirdScore);
+  if (!ma.IsPlaying(aBirdScore)) ma.Stop(aBirdScore);
+  ma.Play(aBirdScore);
 }
 
 Scene::Scene() {}
 
-Scene::~Scene()
-{
-  sEngine.DestroyAudio();
+Scene::~Scene() {
+  if (ma.IsPlaying(aBgMusic)) ma.Stop(aBgMusic);
+  if (ma.IsPlaying(aBirdFlap)) ma.Stop(aBirdFlap);
+  if (ma.IsPlaying(aBirdDeath)) ma.Stop(aBirdDeath);
+  if (ma.IsPlaying(aBirdScore)) ma.Stop(aBirdScore);
+  
+  ma.UnloadSound(aBgMusic);
+  ma.UnloadSound(aBirdFlap);
+  ma.UnloadSound(aBirdDeath);
+  ma.UnloadSound(aBirdScore);
+  
+  ma.~MiniAudio();
 }
 
 Scene::Scene(GameEngine *engine)
