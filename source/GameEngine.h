@@ -298,7 +298,7 @@ void Scene::loadAssets()
   sBackground.init();
   sGround.init();
   sCeiling.init();
-  sPipes.init(BIRD_X + sBird.getWidth());
+  sPipes.init(BIRD_X + BIRD_SW);
 }
 
 void Scene::initScene()

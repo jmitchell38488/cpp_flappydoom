@@ -112,7 +112,8 @@ bool Pipes::checkCollision(Bird * bird, float fGameDistance) {
   // Pipes check
   for (auto * pipe : vPipes) {
     // Skip!
-    if (pipe->bTraversed || !pipe->isVisible()) continue;
+    if (!pipe->isVisible()) continue;
+    if (!pipe->withinRadius(bird)) continue;
 
     // Only check next pipe, not all!
     if (pipe->checkCollision(bird, fGameDistance)) return true;

@@ -49,7 +49,7 @@ float Bird::getWidth() {
 
 bool Bird::checkCollisionBounds() {
   // Test top
-  if (fPosition.y < GROUND_HEIGHT) {
+  if (fPosition.y < CEILING_HEIGHT) {
     return true;
   }
   float dh = fCurFrame->sh;

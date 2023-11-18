@@ -57,6 +57,7 @@ public:
   Pipe(float offX, float offY, olc::Decal *pipes, float sw, float sh, float scale, bool first, float scoreX);
   void setOffset(float offX, float offY, float scoreX);
   bool checkCollision(Bird * bird, float fGameDistance);
+  bool withinRadius(Bird * bird);
   bool isVisible();
   bool isPast();
   void render(olc::PixelGameEngine *engine, float fElapsedTime);
@@ -118,12 +119,19 @@ bool Pipe::checkCollision(Bird * bird, float fGameDistance)
   return testColPipe(bird, colDataTop, fGameDistance) || testColPipe(bird, colDataBot, fGameDistance);
 }
 
+bool Pipe::withinRadius(Bird * bird) {
+  BirdData bd = bird->getBirdColMask();
+  if (bd.cx + bd.dw + 5 < colDataTop->dx) return false;
+  if (bd.cx + 5 + bd.dw + bd.dw * 2 < colDataTop->dx + colDataTop->sw) return false;
+  return true;
+}
+
 bool Pipe::testColPipe(Bird * bird, PipeColData * cd, float fGameDistance) {
   BirdData bd = bird->getBirdColMask();
   float testX = bd.cx;
   float testY = bd.cy;
 
-  // Closest edge
+  // Closest edge from top-left (0,0)
   if (bd.cx < cd->dx)                 testX = cd->dx;           // left edge
   else if (bd.cx > cd->dx + cd->sw)   testX = cd->dx + cd->sw;  // right edge
   if (bd.cy < cd->dy)                 testY = cd->dy;           // top edge
@@ -159,17 +167,8 @@ void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
   if (!gSettings.DEBUG_MODE) {
     olc::vf2d top = {colDataTop->dx, colDataTop->dy};
     engine->DrawPartialDecal(top, {fWidth, fHeight}, dPipes, {PIPE_SW, 0}, {fWidth, fHeight});
-    // engine->DrawDecal(top, dPipes, {fScaleFactor, fScaleFactor});
-
-    #ifdef __APPLE__
     olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
     engine->DrawPartialDecal(bot, {fWidth, fHeight}, dPipes, {0, 0}, {fWidth, fHeight});
-    // engine->DrawDecal(bot, dPipeTop, {fScaleFactor, fScaleFactor});
-    #endif // __APPLE__
-    #ifndef __APPLE__
-    olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
-    engine->DrawDecal(bot, dPipeBot, {fScaleFactor, fScaleFactor});
-    #endif // !__APPLE__
   }
 
   if (gSettings.DEBUG_MODE) {
@@ -185,7 +184,7 @@ void Pipe::update(float fElapsedTime, float gameSpeed)
   colDataBot->dx = fOffX;
 
   // Check if passed
-  if (!bTraversed && fOffX + fWidth * fScaleFactor < fScoreOffsetX)
+  if (!bTraversed && colDataTop->dx + colDataTop->sw < fScoreOffsetX)
   {
     bTraversed = true;
     gScore.newScore = true;
