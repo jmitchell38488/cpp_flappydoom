@@ -26,7 +26,7 @@ private:
 
   float fOffX = 0.0f;
   float fOffY = 0.0f;
-  float fVertGap = gSettings.P_GAP;
+  float fVertGap = ENABLE_DEBUG_MODE ? gSettings.P_GAP : PIPE_GAP;
   float fVertYOffset = 0.0f;
 
   float fMidY = GAME_HEIGHT / 2;
@@ -210,7 +210,7 @@ void Pipe::setOffY(bool first)
     return;
   }
   
-  fVertGap = gSettings.P_GAP;
+  fVertGap = ENABLE_DEBUG_MODE ? gSettings.P_GAP : PIPE_GAP;
 
   float inc = std::floor(fVertGap * 1.25 / 2);
   int offset = (std::rand() % 4) - 2;

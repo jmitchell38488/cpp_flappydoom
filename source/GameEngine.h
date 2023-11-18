@@ -45,7 +45,8 @@ private:
   float fFirstPipe = GAME_WIDTH / 1.5;
   float fPipeGap = GAME_WIDTH / 3;
   float fGameDistance = 0.0f;
-  float fRenders = 0.0f;;
+  float fRenders = 0.0f;
+  ;
 
   uint16_t gCurScore;
   uint16_t gTopScore;
@@ -125,7 +126,8 @@ GameEngine::GameEngine()
   gScene = new Scene(this);
 }
 
-GameEngine::~GameEngine() {
+GameEngine::~GameEngine()
+{
 }
 
 bool GameEngine::initialise()
@@ -144,19 +146,20 @@ void GameEngine::setGameState(GameState state)
   gState = state;
   gScene->setGameState(gState);
 
-  switch (state) {
-    case GameState::PLAYING:
-      bPlaying = true;
-      break;
-    
-    case GameState::IDLE:
-      bPlaying = false;
-      gScene->setGameState(GameState::IDLE);
-      break;
+  switch (state)
+  {
+  case GameState::PLAYING:
+    bPlaying = true;
+    break;
 
-    case GameState::GAMEOVER:
-      bPlaying = false;
-      break;
+  case GameState::IDLE:
+    bPlaying = false;
+    gScene->setGameState(GameState::IDLE);
+    break;
+
+  case GameState::GAMEOVER:
+    bPlaying = false;
+    break;
   }
 }
 
@@ -186,12 +189,14 @@ void GameEngine::jump()
     return;
 }
 
-void GameEngine::handleInput(float fElapsedTime) {
+void GameEngine::handleInput(float fElapsedTime)
+{
   if (GetKey(olc::Key::SPACE).bPressed)
   {
     if (gState == GameState::GAMEOVER)
     {
-      if (gScore.score > gScore.topScore) gScore.topScore = gScore.score;
+      if (gScore.score > gScore.topScore)
+        gScore.topScore = gScore.score;
       gScore.runs++;
       resetGame();
     }
@@ -208,9 +213,12 @@ void GameEngine::handleInput(float fElapsedTime) {
 
   if (GetKey(olc::Key::ENTER).bPressed)
   {
-    if (gState != GameState::GAMEOVER) {
-      if (bPlaying) setGameState(GameState::IDLE);
-      else {
+    if (gState != GameState::GAMEOVER)
+    {
+      if (bPlaying)
+        setGameState(GameState::IDLE);
+      else
+      {
         setGameState(GameState::PLAYING);
         fAccumulatedTime = fElapsedTime;
       }
@@ -221,7 +229,8 @@ void GameEngine::handleInput(float fElapsedTime) {
   {
     if (gState == GameState::GAMEOVER)
     {
-      if (gScore.score > gScore.topScore) gScore.topScore = gScore.score;
+      if (gScore.score > gScore.topScore)
+        gScore.topScore = gScore.score;
       gScore.runs++;
     }
     resetGame();
@@ -232,55 +241,89 @@ void GameEngine::handleInput(float fElapsedTime) {
     exit(0);
   }
 
-  if (GetKey(olc::Key::D).bPressed) {
-    gSettings.DEBUG_MODE = !gSettings.DEBUG_MODE;
+  if (GetKey(olc::Key::D).bPressed)
+  {
+    if (ENABLE_DEBUG_MODE)
+      gSettings.DEBUG_MODE = !gSettings.DEBUG_MODE;
   }
 
-  if (GetKey(olc::Key::P).bPressed) {
-    gSettings.CLAMP_DIFFICULTY = !gSettings.CLAMP_DIFFICULTY;
-    gDifficulty->toggleNoChange();
-  }
-
-  if (GetKey(olc::Key::O).bPressed) {
-    if (gSettings.CLAMP_DIFFICULTY) {
-      gDifficulty->incDifficulty();
+  if (GetKey(olc::Key::P).bPressed)
+  {
+    if (ENABLE_DEBUG_MODE)
+    {
+      gSettings.CLAMP_DIFFICULTY = !gSettings.CLAMP_DIFFICULTY;
+      gDifficulty->toggleNoChange();
     }
   }
 
-
-  if (GetKey(olc::Key::I).bPressed) {
-    if (gSettings.CLAMP_DIFFICULTY) {
-      gDifficulty->decDifficulty();
+  if (GetKey(olc::Key::O).bPressed)
+  {
+    if (ENABLE_DEBUG_MODE)
+    {
+      if (gSettings.CLAMP_DIFFICULTY)
+      {
+        gDifficulty->incDifficulty();
+      }
     }
   }
 
-  if (GetKey(olc::Key::T).bPressed) {
-    gDifficulty->decScale();
+  if (GetKey(olc::Key::I).bPressed)
+  {
+    if (ENABLE_DEBUG_MODE)
+    {
+      if (gSettings.CLAMP_DIFFICULTY)
+      {
+        gDifficulty->decDifficulty();
+      }
+    }
   }
 
-  if (GetKey(olc::Key::Y).bPressed) {
-    gDifficulty->incScale();
+  if (GetKey(olc::Key::T).bPressed)
+  {
+    if (ENABLE_DEBUG_MODE)
+    {
+      gDifficulty->decScale();
+    }
   }
 
-  if (GetKey(olc::Key::G).bPressed) {
-    gSettings.P_GAP -= 5.0f;
-    if (gSettings.P_GAP < BIRD_SH) gSettings.P_GAP = BIRD_SH;
+  if (GetKey(olc::Key::Y).bPressed)
+  {
+    if (ENABLE_DEBUG_MODE)
+    {
+      gDifficulty->incScale();
+    }
   }
 
-  if (GetKey(olc::Key::H).bPressed) {
-    gSettings.P_GAP += 5.0f;
-
-    if (gSettings.P_GAP > PIPE_GAP * 2) gSettings.P_GAP = PIPE_GAP * 2;
+  if (GetKey(olc::Key::G).bPressed)
+  {
+    if (ENABLE_DEBUG_MODE)
+    {
+      gSettings.P_GAP -= 5.0f;
+      if (gSettings.P_GAP < BIRD_SH)
+        gSettings.P_GAP = BIRD_SH;
+    }
   }
 
+  if (GetKey(olc::Key::H).bPressed)
+  {
+    if (ENABLE_DEBUG_MODE)
+    {
+      gSettings.P_GAP += 5.0f;
 
+      if (gSettings.P_GAP > PIPE_GAP * 2)
+        gSettings.P_GAP = PIPE_GAP * 2;
+    }
+  }
 }
 
-void GameEngine::doGameUpdate(float fElapsedTime) {
-  while (fAccumulatedTime >= fElapsedTime) {
+void GameEngine::doGameUpdate(float fElapsedTime)
+{
+  while (fAccumulatedTime >= fElapsedTime)
+  {
     gScriptProcessor->processCommands(fElapsedTime);
 
-    if (gScore.newScore) {
+    if (gScore.newScore)
+    {
       gScore.newScore = false;
       gScore.score += gDifficulty->gameScore();
       gScene->score();
@@ -298,12 +341,14 @@ bool GameEngine::update(float fElapsedTime)
   fAccumulatedTime += fElapsedTime;
   float tick = fAccumulatedTime;
 
-  if (fAccumulatedTime < 0) fAccumulatedTime = 0.0f;
-  if (fLag < 0) fLag = 0.0f;
+  if (fAccumulatedTime < 0)
+    fAccumulatedTime = 0.0f;
+  if (fLag < 0)
+    fLag = 0.0f;
 
   handleInput(fAccumulatedTime);
   doGameUpdate(GAME_TICK);
-  
+
   gScene->render(this, fElapsedTime);
 
   return true;
@@ -348,16 +393,17 @@ void Scene::initScene()
   sBackground.setIdle();
   sGround.setIdle();
   sCeiling.setIdle();
-  sPipes.setIdle(); 
+  sPipes.setIdle();
 
   aBgMusic = ma.LoadSound("./assets/sound/theme.mp3");
   aBirdFlap = ma.LoadSound("./assets/sound/wing2.wav");
   aBirdDeath = ma.LoadSound("./assets/sound/hit2.wav");
   aBirdScore = ma.LoadSound("./assets/sound/point2.wav");
-  
+
   ma.SetVolume(aBgMusic, aVol);
 
-  if (!ma.IsPlaying(aBgMusic)) ma.Play(aBgMusic, true);
+  if (!ma.IsPlaying(aBgMusic))
+    ma.Play(aBgMusic, true);
 }
 
 float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
@@ -367,9 +413,9 @@ float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
   {
     fGameDistance += difficulty->gameSpeed();
     sBackground.update(fElapsedTime);
-    sGround.update(fElapsedTime, difficulty->gameSpeed() * 1+fElapsedTime/2);
-    sCeiling.update(fElapsedTime, difficulty->gameSpeed() * 1+fElapsedTime/2);
-    sPipes.update(fElapsedTime, difficulty->gameSpeed() * 1+fElapsedTime/2);
+    sGround.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2);
+    sCeiling.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2);
+    sPipes.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2);
   }
 
   sBird.update(fElapsedTime);
@@ -396,20 +442,18 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
   sPipes.render(engine, fElapsedTime);
   sGround.render(engine, fElapsedTime);
   sCeiling.render(engine, fElapsedTime);
+  
+  if (ENABLE_DEBUG_MODE) {
+    engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gScore.score)));
+    engine->DrawStringDecal({20, 35}, "Difficulty: " + gEngine->gDifficulty->getMode() + (gSettings.CLAMP_DIFFICULTY ? " [clamped!]" : "") + " [vel: " + std::to_string(gEngine->gDifficulty->gameSpeed()) + ", fac: " + std::to_string(gEngine->gDifficulty->getScale()) + "]");
+    engine->DrawStringDecal({20, 50}, "Runs: " + std::to_string((int)gScore.runs));
+    if (gScore.score > gScore.topScore)
+      engine->DrawStringDecal({20, 65}, "New top score!");
+    else if (gScore.topScore > 0 && gScore.runs > 0)
+      engine->DrawStringDecal({20, 65}, "Top score: " + std::to_string((int)std::round(gScore.topScore)));
 
-  // engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gEngine->fGameScore)));
-  engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gScore.score)));
-  engine->DrawStringDecal({20, 35}, "Difficulty: " + gEngine->gDifficulty->getMode() 
-    + (gSettings.CLAMP_DIFFICULTY ? " [clamped!]" : "") 
-    + " [vel: " + std::to_string(gEngine->gDifficulty->gameSpeed()) 
-    + ", fac: " + std::to_string(gEngine->gDifficulty->getScale()) + "]");
-  engine->DrawStringDecal({20, 50}, "Runs: " + std::to_string((int)gScore.runs));
-  if (gScore.score > gScore.topScore)
-    engine->DrawStringDecal({20, 65}, "New top score!");
-  else if (gScore.topScore > 0 && gScore.runs > 0)
-    engine->DrawStringDecal({20, 65}, "Top score: " + std::to_string((int)std::round(gScore.topScore)));
-
-  engine->DrawStringDecal({20, 100}, "Pipe gap: " + std::to_string((int)std::round(gSettings.P_GAP)));
+    engine->DrawStringDecal({20, 100}, "Pipe gap: " + std::to_string((int)std::round(gSettings.P_GAP)));
+  }
 
   // Render last z index
   sBird.render(engine, fElapsedTime);
@@ -446,7 +490,8 @@ void Scene::setGameState(GameState state)
     break;
 
   case GameState::GAMEOVER:
-    if (!ma.IsPlaying(aBirdDeath)) ma.Stop(aBirdDeath);
+    if (!ma.IsPlaying(aBirdDeath))
+      ma.Stop(aBirdDeath);
     ma.Play(aBirdDeath);
 
     sBird.setDead();
@@ -461,29 +506,36 @@ void Scene::setGameState(GameState state)
 void Scene::jump()
 {
   sBird.flapped();
-  if (!ma.IsPlaying(aBirdFlap)) ma.Stop(aBirdFlap);
+  if (!ma.IsPlaying(aBirdFlap))
+    ma.Stop(aBirdFlap);
   ma.Play(aBirdFlap);
 }
 
 void Scene::score()
 {
-  if (!ma.IsPlaying(aBirdScore)) ma.Stop(aBirdScore);
+  if (!ma.IsPlaying(aBirdScore))
+    ma.Stop(aBirdScore);
   ma.Play(aBirdScore);
 }
 
 Scene::Scene() {}
 
-Scene::~Scene() {
-  if (ma.IsPlaying(aBgMusic)) ma.Stop(aBgMusic);
-  if (ma.IsPlaying(aBirdFlap)) ma.Stop(aBirdFlap);
-  if (ma.IsPlaying(aBirdDeath)) ma.Stop(aBirdDeath);
-  if (ma.IsPlaying(aBirdScore)) ma.Stop(aBirdScore);
-  
+Scene::~Scene()
+{
+  if (ma.IsPlaying(aBgMusic))
+    ma.Stop(aBgMusic);
+  if (ma.IsPlaying(aBirdFlap))
+    ma.Stop(aBirdFlap);
+  if (ma.IsPlaying(aBirdDeath))
+    ma.Stop(aBirdDeath);
+  if (ma.IsPlaying(aBirdScore))
+    ma.Stop(aBirdScore);
+
   ma.UnloadSound(aBgMusic);
   ma.UnloadSound(aBirdFlap);
   ma.UnloadSound(aBirdDeath);
   ma.UnloadSound(aBirdScore);
-  
+
   ma.~MiniAudio();
 }
 

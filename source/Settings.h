@@ -32,3 +32,5 @@ const float PIPE_SW = 62.0f;
 const float PIPE_SH = 300.0f;
 const float PIPE_SF = 1.0f;
 const float PIPE_GAP = GAME_HEIGHT / 3;
+
+const bool ENABLE_DEBUG_MODE = false;
