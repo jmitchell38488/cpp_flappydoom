@@ -26,7 +26,7 @@ private:
 
   float fOffX = 0.0f;
   float fOffY = 0.0f;
-  float fVertGap = GAME_HEIGHT / 3;
+  float fVertGap = gSettings.P_GAP;
   float fVertYOffset = 0.0f;
 
   float fMidY = GAME_HEIGHT / 2;
@@ -34,8 +34,8 @@ private:
 
   olc::Decal *dPipes;
 
-  PipeColData * colDataTop;
-  PipeColData * colDataBot;
+  PipeColData * colDataTop = nullptr;
+  PipeColData * colDataBot = nullptr;
 
 public:
   bool bTraversed = false;
@@ -88,8 +88,8 @@ void Pipe::initColData() {
   float offTopY = 0 - dY - fVertGap / 2 + fVertYOffset / 2;
   float offBotY = fHeight * fScaleFactor + offTopY + fVertGap;
 
-  colDataTop = new PipeColData();
-  colDataBot = new PipeColData();
+  if (colDataTop == nullptr) colDataTop = new PipeColData();
+  if (colDataBot == nullptr) colDataBot = new PipeColData();
 
   colDataTop->dx = fOffX;
   colDataBot->dx = fOffX;
@@ -199,6 +199,7 @@ void Pipe::reset(float offX, bool first)
   bFirst = first;
   fVertYOffset = 0;
   setOffY(first);
+  initColData();
 }
 
 void Pipe::setOffY(bool first)
@@ -208,6 +209,8 @@ void Pipe::setOffY(bool first)
     fVertYOffset = 0;
     return;
   }
+  
+  fVertGap = gSettings.P_GAP;
 
   float inc = std::floor(fVertGap * 1.25 / 2);
   int offset = (std::rand() % 4) - 2;

@@ -241,16 +241,36 @@ void GameEngine::handleInput(float fElapsedTime) {
     gDifficulty->toggleNoChange();
   }
 
+  if (GetKey(olc::Key::O).bPressed) {
+    if (gSettings.CLAMP_DIFFICULTY) {
+      gDifficulty->incDifficulty();
+    }
+  }
+
+
   if (GetKey(olc::Key::I).bPressed) {
     if (gSettings.CLAMP_DIFFICULTY) {
       gDifficulty->decDifficulty();
     }
   }
 
-  if (GetKey(olc::Key::O).bPressed) {
-    if (gSettings.CLAMP_DIFFICULTY) {
-      gDifficulty->incDifficulty();
-    }
+  if (GetKey(olc::Key::T).bPressed) {
+    gDifficulty->decScale();
+  }
+
+  if (GetKey(olc::Key::Y).bPressed) {
+    gDifficulty->incScale();
+  }
+
+  if (GetKey(olc::Key::G).bPressed) {
+    gSettings.P_GAP -= 5.0f;
+    if (gSettings.P_GAP < BIRD_SH) gSettings.P_GAP = BIRD_SH;
+  }
+
+  if (GetKey(olc::Key::H).bPressed) {
+    gSettings.P_GAP += 5.0f;
+
+    if (gSettings.P_GAP > PIPE_GAP * 2) gSettings.P_GAP = PIPE_GAP * 2;
   }
 
 
@@ -379,12 +399,17 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
 
   // engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gEngine->fGameScore)));
   engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gScore.score)));
-  engine->DrawStringDecal({20, 35}, "Difficulty: " + gEngine->gDifficulty->getMode() + (gSettings.CLAMP_DIFFICULTY ? " [clamped!]" : ""));
+  engine->DrawStringDecal({20, 35}, "Difficulty: " + gEngine->gDifficulty->getMode() 
+    + (gSettings.CLAMP_DIFFICULTY ? " [clamped!]" : "") 
+    + " [vel: " + std::to_string(gEngine->gDifficulty->gameSpeed()) 
+    + ", fac: " + std::to_string(gEngine->gDifficulty->getScale()) + "]");
   engine->DrawStringDecal({20, 50}, "Runs: " + std::to_string((int)gScore.runs));
   if (gScore.score > gScore.topScore)
     engine->DrawStringDecal({20, 65}, "New top score!");
   else if (gScore.topScore > 0 && gScore.runs > 0)
     engine->DrawStringDecal({20, 65}, "Top score: " + std::to_string((int)std::round(gScore.topScore)));
+
+  engine->DrawStringDecal({20, 100}, "Pipe gap: " + std::to_string((int)std::round(gSettings.P_GAP)));
 
   // Render last z index
   sBird.render(engine, fElapsedTime);

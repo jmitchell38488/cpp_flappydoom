@@ -76,7 +76,7 @@ void Background::init() {
 	dBackground = new olc::Decal(sBackground);
 	fHeight = sBackground->height * fScaleFactor;
 	fWidth = sBackground->width * fScaleFactor;
-	fScrollRate = (GAME_TICK) * fWidth / 7.75f;
+	fScrollRate = (GAME_TICK) * fWidth / 10.0f;
 	fPosition = { 0, fY };
 }
 

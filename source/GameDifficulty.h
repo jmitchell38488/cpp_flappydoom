@@ -28,6 +28,7 @@ private:
 
   // Scroll speed of the game
   float fGameSpeed;
+  float fGameSpeed_sf;
 
   // Minimum game distance travelled for difficulty level
   float fGameDistance;
@@ -37,6 +38,9 @@ private:
 
   bool bDiffChange = true;
 
+  float fScaleFactor = 1.0f;
+  float fScaleFactorStep = 0.15f;
+
 public:
   void setDifficulty(DifficultyMode mode)
   {
@@ -44,8 +48,8 @@ public:
     {
     case DifficultyMode::EASY:
       bDiffChange = true;
-      fGameSpeed = 3.0f;
-      fGameDistance = GAME_WIDTH * 2;
+      fGameSpeed = 3.25f;
+      fGameDistance = GAME_WIDTH * 3;
       fGameScore = 1.0f;
       mPrevMode = mMode;
       mMode = mode;
@@ -54,8 +58,8 @@ public:
 
     case DifficultyMode::MEDIUM:
       bDiffChange = true;
-      fGameSpeed = 3.75f;
-      fGameDistance = GAME_WIDTH * 4;
+      fGameSpeed = 3.95f;
+      fGameDistance = GAME_WIDTH * 6;
       fGameScore = 1.0f;
       mPrevMode = mMode;
       mMode = mode;
@@ -64,8 +68,8 @@ public:
 
     case DifficultyMode::HARD:
       bDiffChange = true;
-      fGameSpeed = 4.5f;
-      fGameDistance = GAME_WIDTH * 6;
+      fGameSpeed = 4.85f;
+      fGameDistance = GAME_WIDTH * 10;
       fGameScore = 1.5f;
       mPrevMode = mMode;
       mMode = mode;
@@ -74,9 +78,9 @@ public:
 
     case DifficultyMode::NIGHTMARE:
       bDiffChange = true;
-      fGameSpeed = 5.75f;
-      fGameDistance = GAME_WIDTH * 8;
-      fGameScore = 4.0f;
+      fGameSpeed = 6.0f;
+      fGameDistance = GAME_WIDTH * 15;
+      fGameScore = 2.0f;
       mPrevMode = mMode;
       mMode = mode;
       sMode = "Nightmare";
@@ -84,9 +88,9 @@ public:
 
     case DifficultyMode::IMPOSSIBLE:
       bDiffChange = true;
-      fGameSpeed = 8.0f;
-      fGameDistance = GAME_WIDTH * 10;
-      fGameScore = 10.0f;
+      fGameSpeed = 9.0f;
+      fGameDistance = GAME_WIDTH * 20;
+      fGameScore = 5.0f;
       mPrevMode = mMode;
       mMode = mode;
       sMode = "Watch me die!";
@@ -98,6 +102,8 @@ public:
       mMode = DifficultyMode::NOCHANGE;
       break;
     }
+
+    fGameSpeed_sf = fGameSpeed;
   }
 
   void gameUpdate(float distanceX)
@@ -143,7 +149,7 @@ public:
 
   float gameSpeed()
   {
-    return fGameSpeed;
+    return fGameSpeed_sf;
   }
 
   std::string getMode()
@@ -222,6 +228,21 @@ public:
       setDifficulty(mPrevMode);
       bDiffChange = true;
     }
+  }
+
+  void incScale() {
+    fScaleFactor += fScaleFactorStep;
+    fGameSpeed_sf = fGameSpeed * fScaleFactor;
+  }
+
+  void decScale() {
+    if (fScaleFactor > 0) fScaleFactor -= fScaleFactorStep;
+    if (fScaleFactor < 0) fScaleFactor = 0;
+    fGameSpeed_sf = fGameSpeed * fScaleFactor;
+  }
+
+  float getScale() {
+    return fScaleFactor;
   }
   
 };
