@@ -20,7 +20,6 @@
 #include "GameState.h"
 #include "GameDifficulty.h"
 #include "GameScript.h"
-// #include "GameAudio.h"
 #include "Settings.h"
 #include "Score.h"
 
@@ -164,7 +163,9 @@ void GameEngine::setGameState(GameState state)
 void GameEngine::resetGame()
 {
   fGameScore = 0.0f;
-  gDifficulty->setDifficulty(DifficultyMode::EASY);
+  if (!gSettings.CLAMP_DIFFICULTY)
+    gDifficulty->setDifficulty(DifficultyMode::EASY);
+
   gScene->resetScene();
   setGameState(GameState::IDLE);
   bPlaying = false;
@@ -234,6 +235,25 @@ void GameEngine::handleInput(float fElapsedTime) {
   if (GetKey(olc::Key::D).bPressed) {
     gSettings.DEBUG_MODE = !gSettings.DEBUG_MODE;
   }
+
+  if (GetKey(olc::Key::P).bPressed) {
+    gSettings.CLAMP_DIFFICULTY = !gSettings.CLAMP_DIFFICULTY;
+    gDifficulty->toggleNoChange();
+  }
+
+  if (GetKey(olc::Key::I).bPressed) {
+    if (gSettings.CLAMP_DIFFICULTY) {
+      gDifficulty->decDifficulty();
+    }
+  }
+
+  if (GetKey(olc::Key::O).bPressed) {
+    if (gSettings.CLAMP_DIFFICULTY) {
+      gDifficulty->incDifficulty();
+    }
+  }
+
+
 }
 
 void GameEngine::doGameUpdate(float fElapsedTime) {
@@ -359,7 +379,7 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
 
   // engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gEngine->fGameScore)));
   engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gScore.score)));
-  engine->DrawStringDecal({20, 35}, "Difficulty: " + gEngine->gDifficulty->getMode());
+  engine->DrawStringDecal({20, 35}, "Difficulty: " + gEngine->gDifficulty->getMode() + (gSettings.CLAMP_DIFFICULTY ? " [clamped!]" : ""));
   engine->DrawStringDecal({20, 50}, "Runs: " + std::to_string((int)gScore.runs));
   if (gScore.score > gScore.topScore)
     engine->DrawStringDecal({20, 65}, "New top score!");

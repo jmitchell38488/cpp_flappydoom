@@ -1,5 +1,6 @@
 #pragma once
 
+#include "definitions.h"
 #include "Settings.h"
 
 enum class DifficultyMode
@@ -21,6 +22,7 @@ public:
 
 private:
   DifficultyMode mMode;
+  DifficultyMode mPrevMode;
 
   std::string sMode;
 
@@ -45,6 +47,7 @@ public:
       fGameSpeed = 3.0f;
       fGameDistance = GAME_WIDTH * 2;
       fGameScore = 1.0f;
+      mPrevMode = mMode;
       mMode = mode;
       sMode = "I'm too young to die";
       break;
@@ -54,6 +57,7 @@ public:
       fGameSpeed = 3.75f;
       fGameDistance = GAME_WIDTH * 4;
       fGameScore = 1.0f;
+      mPrevMode = mMode;
       mMode = mode;
       sMode = "Hey, not too rough";
       break;
@@ -63,6 +67,7 @@ public:
       fGameSpeed = 4.5f;
       fGameDistance = GAME_WIDTH * 6;
       fGameScore = 1.5f;
+      mPrevMode = mMode;
       mMode = mode;
       sMode = "Hurt me plenty";
       break;
@@ -72,6 +77,7 @@ public:
       fGameSpeed = 5.75f;
       fGameDistance = GAME_WIDTH * 8;
       fGameScore = 4.0f;
+      mPrevMode = mMode;
       mMode = mode;
       sMode = "Nightmare";
       break;
@@ -81,13 +87,15 @@ public:
       fGameSpeed = 8.0f;
       fGameDistance = GAME_WIDTH * 10;
       fGameScore = 10.0f;
+      mPrevMode = mMode;
       mMode = mode;
       sMode = "Watch me die!";
       break;
 
     case DifficultyMode::NOCHANGE:
       bDiffChange = false;
-      mMode = DifficultyMode::EASY;
+      mPrevMode = mMode;
+      mMode = DifficultyMode::NOCHANGE;
       break;
     }
   }
@@ -99,7 +107,7 @@ public:
       return;
 
     // Highest difficulty
-    if (mMode == DifficultyMode::IMPOSSIBLE)
+    if (mMode == DifficultyMode::IMPOSSIBLE || mMode == DifficultyMode::NOCHANGE)
       return;
 
     if (distanceX > fGameDistance)
@@ -147,6 +155,75 @@ public:
   {
     return fGameScore;
   }
+
+  void decDifficulty() {
+    DifficultyMode mode = mMode == DifficultyMode::NOCHANGE ? mPrevMode : mMode;
+    switch (mode)
+    {
+    case DifficultyMode::MEDIUM:
+      setDifficulty(DifficultyMode::EASY);
+      bDiffChange = false;
+      break;
+
+    case DifficultyMode::HARD:
+      setDifficulty(DifficultyMode::MEDIUM);
+      bDiffChange = false;
+      break;
+
+    case DifficultyMode::NIGHTMARE:
+      setDifficulty(DifficultyMode::HARD);
+      bDiffChange = false;
+      break;
+
+    case DifficultyMode::IMPOSSIBLE:
+      setDifficulty(DifficultyMode::NIGHTMARE);
+      bDiffChange = false;
+      break;
+      
+    default:
+      break;
+    }
+  }
+
+  void incDifficulty() {
+    DifficultyMode mode = mMode == DifficultyMode::NOCHANGE ? mPrevMode : mMode;
+    switch (mode)
+    {
+    case DifficultyMode::EASY:
+      setDifficulty(DifficultyMode::MEDIUM);
+      bDiffChange = false;
+      break;
+
+    case DifficultyMode::MEDIUM:
+      setDifficulty(DifficultyMode::HARD);
+      bDiffChange = false;
+      break;
+
+    case DifficultyMode::HARD:
+      setDifficulty(DifficultyMode::NIGHTMARE);
+      bDiffChange = false;
+      break;
+
+    case DifficultyMode::NIGHTMARE:
+      setDifficulty(DifficultyMode::IMPOSSIBLE);
+      bDiffChange = false;
+      break;
+      
+    default:
+      break;
+    }
+  }
+
+  void toggleNoChange() {
+    if (mMode != DifficultyMode::NOCHANGE) {
+      setDifficulty(DifficultyMode::NOCHANGE);
+      bDiffChange = false;
+    } else {
+      setDifficulty(mPrevMode);
+      bDiffChange = true;
+    }
+  }
+  
 };
 
 GameDifficulty::GameDifficulty()
