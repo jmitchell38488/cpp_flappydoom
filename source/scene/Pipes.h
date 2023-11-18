@@ -11,10 +11,10 @@ class Pipes
 {
 private:
   std::vector<Pipe *> vPipes;
-  olc::Sprite *sPipeTop;
-  olc::Sprite *sPipeBot;
-  olc::Decal *dPipeTop;
-  olc::Decal *dPipeBot;
+  olc::Sprite *sPipes;
+  olc::Decal *dPipes;
+  float fPipeW = 62.0f;
+  float fPipeH = 300.0f;
 
   float fScrollRate = 0.0f;
   float fScoreOffX = 0.0f;
@@ -41,11 +41,8 @@ public:
 
 void Pipes::init(float offX)
 {
-  sPipeTop = new olc::Sprite((std::string) "./assets/images/top_pipe.png");
-  dPipeTop = new olc::Decal(sPipeTop);
-
-  sPipeBot = new olc::Sprite((std::string) "./assets/images/bot_pipe.png");
-  dPipeBot = new olc::Decal(sPipeBot);
+  sPipes = new olc::Sprite((std::string) "./assets/s-pipe.png");
+  dPipes = new olc::Decal(sPipes);
 
   fScoreOffX = offX;
   addPipes();
@@ -132,7 +129,9 @@ void Pipes::addPipes()
   
   for (int i = 0; i < 5; i++)
   {
-    vPipes.push_back(new Pipe(nextX, 0, dPipeTop, dPipeBot, i == 0, fScoreOffX));
+    // Pipe(float offX, float offY, olc::Decal *pipes, float sw, float sh, float scale, bool first, float scoreX)
+    // vPipes.push_back(new Pipe(nextX, 0, dPipes, PIPE_SW, PIPE_SH, i == 0, fScoreOffX));
+    vPipes.push_back(new Pipe(nextX, 0, dPipes, PIPE_SW, PIPE_SH, PIPE_SF, i == 0, fScoreOffX));
     nextX = fLastXOffset + fPipeStepX;
     fLastXOffset = nextX;
   }

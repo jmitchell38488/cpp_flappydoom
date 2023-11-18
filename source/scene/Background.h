@@ -10,7 +10,7 @@ enum class BackgroundState {
 
 class Background {
 private:
-	float fScale = 1.0f;
+	float fScaleFactor = 1.0f;
 	float fWidth = 1.0f;
 	float fHeight = 1.0f;
 
@@ -21,7 +21,7 @@ private:
 	float fAnimRate = ANIM_TICK;
 	float fLastAnimTime = 0.0f;
 	float fScrollRate = 0.0f;
-	float fY = 25.0f;
+	float fY = (float)CEILING_HEIGHT;
 
 	BackgroundState state = BackgroundState::IDLE;
 
@@ -52,34 +52,30 @@ void Background::update(float fElapsedTime) {
 void Background::render(olc::PixelGameEngine* engine, float fElapsedTime) {
   if (!gSettings.DEBUG_MODE) {
     // Draw frame 1
-    engine->DrawDecal(fPosition, dBackground, { fScale, fScale });
+    engine->DrawDecal(fPosition, dBackground, { fScaleFactor, fScaleFactor });
     
     // Draw frame 2?
     olc::vf2d newPos = { fPosition.x + fWidth, fPosition.y };
     if (fPosition.x + fWidth < engine->ScreenWidth()) {
       // Draw partial decal, not the full decal
-      engine->DrawDecal(newPos, dBackground, { fScale, fScale });
-
+      engine->DrawDecal(newPos, dBackground, { fScaleFactor, fScaleFactor });
     }
 
     // Draw frame 3?
     if (fPosition.x + fWidth + fWidth < engine->ScreenWidth()) {
       olc::vf2d newPos2 = { fPosition.x + fWidth + fWidth, fPosition.y };
       // Draw partial decal, not the full decal
-      engine->DrawDecal(newPos2, dBackground, { fScale, fScale });
+      engine->DrawDecal(newPos2, dBackground, { fScaleFactor, fScaleFactor });
 
     }
-
   }
 }
 
 void Background::init() {
-	fScale = 0.5f;
-
-	sBackground = new olc::Sprite((std::string)"./assets/images/bg.png");
+	sBackground = new olc::Sprite((std::string)"./assets/i-bg.jpg");
 	dBackground = new olc::Decal(sBackground);
-	fHeight = sBackground->height * fScale;
-	fWidth = sBackground->width * fScale;
+	fHeight = sBackground->height * fScaleFactor;
+	fWidth = sBackground->width * fScaleFactor;
 	fScrollRate = (GAME_TICK) * fWidth / 7.75f;
 	fPosition = { 0, fY };
 }

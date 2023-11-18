@@ -11,7 +11,7 @@ enum class CeilingState {
 
 class Ceiling {
 private:
-	float fScale = 1.0f;
+	float fScaleFactor = 1.0f;
 	float fWidth = 1.0f;
 	float fHeight = 1.0f;
 
@@ -51,13 +51,13 @@ void Ceiling::update(float fElapsedTime, float gameSpeed) {
 void Ceiling::render(olc::PixelGameEngine* engine, float fElapsedTime) {
   if (!gSettings.DEBUG_MODE) {
     // Draw frame 1
-    engine->DrawDecal(fPosition, dCeiling, { fScale, fScale });
+    engine->DrawDecal(fPosition, dCeiling, { fScaleFactor, fScaleFactor });
 
     // Draw frame 2?
     olc::vf2d newPos = { fPosition.x + fWidth, fPosition.y };
     if (fPosition.x + fWidth < engine->ScreenWidth()) {
       // Draw partial decal, not the full decal
-      engine->DrawDecal(newPos, dCeiling, { fScale, fScale });
+      engine->DrawDecal(newPos, dCeiling, { fScaleFactor, fScaleFactor });
 
     }
 
@@ -65,24 +65,21 @@ void Ceiling::render(olc::PixelGameEngine* engine, float fElapsedTime) {
     if (fPosition.x + fWidth + fWidth < engine->ScreenWidth()) {
       olc::vf2d newPos2 = { fPosition.x + fWidth + fWidth, fPosition.y };
       // Draw partial decal, not the full decal
-      engine->DrawDecal(newPos2, dCeiling, { fScale, fScale });
+      engine->DrawDecal(newPos2, dCeiling, { fScaleFactor, fScaleFactor });
 
     }
   }
 
   if (gSettings.DEBUG_MODE) {
-    engine->DrawRect({0, 0}, {GAME_WIDTH, (int)(dCeiling->sprite->height * fScale)}, {0, 255, 0});
+    engine->DrawRect({0, 0}, {GAME_WIDTH, (int)(dCeiling->sprite->height * fScaleFactor)}, {0, 255, 0});
   }
 }
 
 void Ceiling::init() {
-	fScale = 0.5f;
-
-	sCeiling = new olc::Sprite((std::string)"./assets/images/ceiling.png");
+	sCeiling = new olc::Sprite((std::string)"./assets/i-cl.jpg");
 	dCeiling = new olc::Decal(sCeiling);
-  fScale = (float)GROUND_HEIGHT / (float)sCeiling->height;
-	fHeight = sCeiling->height * fScale;
-	fWidth = sCeiling->width * fScale;
+	fHeight = sCeiling->height * fScaleFactor;
+	fWidth = sCeiling->width * fScaleFactor;
 	fPosition = { 0, fCeilingY };
 }
 

@@ -5,7 +5,8 @@ const int GAME_HEIGHT = 450;
 const int GAME_PIXEL = 2;
 
 // Ground
-const int GROUND_HEIGHT = GAME_HEIGHT / 12;
+const int GROUND_HEIGHT = 37;
+const int CEILING_HEIGHT = 15;
 
 // const int SCROLL_SPEED = 8;
 const float FPS = 60.0f;
@@ -26,3 +27,7 @@ const float BIRD_JUMP = 16.5f;
 const float BIRD_SW = 61.0f;
 const float BIRD_SH = 71.0f;
 const float BIRD_SF = 1.0f;
+
+const float PIPE_SW = 62.0f;
+const float PIPE_SH = 300.0f;
+const float PIPE_SF = 1.0f;

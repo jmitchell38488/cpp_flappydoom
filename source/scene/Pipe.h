@@ -19,7 +19,7 @@ struct PipeColData {
 class Pipe
 {
 private:
-  float fScale = 1.0f;
+  float fScaleFactor = 1.0f;
   float fWidth = 1.0f;
   float fHeight = 1.0f;
   float fScoreOffsetX = 0.0f;
@@ -32,8 +32,7 @@ private:
   float fMidY = GAME_HEIGHT / 2;
   float fGapY = 0.0f;
 
-  olc::Decal *dPipeTop;
-  olc::Decal *dPipeBot;
+  olc::Decal *dPipes;
 
   PipeColData * colDataTop;
   PipeColData * colDataBot;
@@ -55,7 +54,7 @@ public:
     initColData();
   }
 
-  Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, bool first, float scoreX);
+  Pipe(float offX, float offY, olc::Decal *pipes, float sw, float sh, float scale, bool first, float scoreX);
   void setOffset(float offX, float offY, float scoreX);
   bool checkCollision(Bird * bird, float fGameDistance);
   bool isVisible();
@@ -68,15 +67,14 @@ public:
 
 GameEngine * Pipe::gEngine = nullptr;
 
-Pipe::Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, bool first, float scoreX)
+Pipe::Pipe(float offX, float offY, olc::Decal *pipes, float sw, float sh, float scale, bool first, float scoreX)
 {
   fOffX = offX;
   fOffY = offY;
-  dPipeTop = pipeTop;
-  dPipeBot = pipeBot;
-  fWidth = (float)pipeTop->sprite->width;
-  fHeight = (float)pipeTop->sprite->height;
-  fScale = 0.35f;
+  dPipes = pipes;
+  fScaleFactor = scale;
+  fWidth = sw * scale;
+  fHeight = sh * scale;
   bFirst = first;
   fScoreOffsetX = scoreX;
 
@@ -85,9 +83,9 @@ Pipe::Pipe(float offX, float offY, olc::Decal *pipeTop, olc::Decal *pipeBot, boo
 }
 
 void Pipe::initColData() {
-  float dY = ((fHeight * fScale * 2) - GAME_HEIGHT) / 2;
+  float dY = ((fHeight * fScaleFactor * 2) - GAME_HEIGHT) / 2;
   float offTopY = 0 - dY - fVertGap / 2 + fVertYOffset / 2;
-  float offBotY = dPipeTop->sprite->height * fScale + offTopY + fVertGap;
+  float offBotY = fHeight * fScaleFactor + offTopY + fVertGap;
 
   colDataTop = new PipeColData();
   colDataBot = new PipeColData();
@@ -98,12 +96,12 @@ void Pipe::initColData() {
   colDataBot->dy = offBotY;
   colDataTop->sx = fOffX;
   colDataBot->sx = fOffX;
-  colDataTop->sy = offTopY + dPipeTop->sprite->height * fScale;
+  colDataTop->sy = offTopY + fHeight * fScaleFactor;
   colDataBot->sy = offBotY;
-  colDataTop->sh = dPipeTop->sprite->height * fScale;
-  colDataBot->sh = dPipeTop->sprite->height * fScale;
-  colDataTop->sw = dPipeTop->sprite->width * fScale;
-  colDataBot->sw = dPipeTop->sprite->width * fScale;
+  colDataTop->sh = fHeight * fScaleFactor;
+  colDataBot->sh = fHeight * fScaleFactor;
+  colDataTop->sw = fWidth * fScaleFactor;
+  colDataBot->sw = fWidth * fScaleFactor;
 }
 
 void Pipe::setOffset(float offX, float offY, float scoreX)
@@ -153,22 +151,24 @@ bool Pipe::isVisible()
 
 bool Pipe::isPast()
 {
-  return (fOffX + fWidth * fScale) + 1 < 0;
+  return (fOffX + fWidth * fScaleFactor) + 1 < 0;
 }
 
 void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
 {
   if (!gSettings.DEBUG_MODE) {
     olc::vf2d top = {colDataTop->dx, colDataTop->dy};
-    engine->DrawDecal(top, dPipeTop, {fScale, fScale});
+    engine->DrawPartialDecal(top, {fWidth, fHeight}, dPipes, {PIPE_SW, 0}, {fWidth, fHeight});
+    // engine->DrawDecal(top, dPipes, {fScaleFactor, fScaleFactor});
 
     #ifdef __APPLE__
     olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
-    engine->DrawDecal(bot, dPipeTop, {fScale, fScale});
+    engine->DrawPartialDecal(bot, {fWidth, fHeight}, dPipes, {0, 0}, {fWidth, fHeight});
+    // engine->DrawDecal(bot, dPipeTop, {fScaleFactor, fScaleFactor});
     #endif // __APPLE__
     #ifndef __APPLE__
     olc::vf2d bot = {colDataBot->dx, colDataBot->dy};
-    engine->DrawDecal(bot, dPipeBot, {fScale, fScale});
+    engine->DrawDecal(bot, dPipeBot, {fScaleFactor, fScaleFactor});
     #endif // !__APPLE__
   }
 
@@ -185,7 +185,7 @@ void Pipe::update(float fElapsedTime, float gameSpeed)
   colDataBot->dx = fOffX;
 
   // Check if passed
-  if (!bTraversed && fOffX + fWidth * fScale < fScoreOffsetX)
+  if (!bTraversed && fOffX + fWidth * fScaleFactor < fScoreOffsetX)
   {
     bTraversed = true;
     gScore.newScore = true;
@@ -215,7 +215,7 @@ void Pipe::setOffY(bool first)
   fVertYOffset = inc * offset;
 
   // Taller than one pipe, readjust
-  if (std::abs(fVertYOffset) > dPipeTop->sprite->height * fScale)
+  if (std::abs(fVertYOffset) > fHeight * fScaleFactor)
   {
     fVertYOffset *= 0.85f;
   }

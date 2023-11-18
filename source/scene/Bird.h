@@ -39,7 +39,7 @@ Bird::Bird() {
 
 void Bird::init() {
 	// for (int i = 0; i < 5; i++) addFrame(new olc::Sprite((std::string)"./assets/bird/" + std::to_string(i) + ".png"));
-	addHorzSprite(new olc::Sprite((std::string)"./assets/sprite-bird.png"), 5, BIRD_SW, BIRD_SH, BIRD_SF);
+	addHorzSprite(new olc::Sprite((std::string)"./assets/s-bird.png"), 5, BIRD_SW, BIRD_SH, BIRD_SF);
 	setPosition({ BIRD_X, BIRD_Y });
 }
 
