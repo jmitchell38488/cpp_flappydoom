@@ -231,7 +231,7 @@ void GameEngine::handleInput(float fElapsedTime) {
     exit(0);
   }
 
-  if (GetKey(olc::Key::F10).bPressed) {
+  if (GetKey(olc::Key::D).bPressed) {
     gSettings.DEBUG_MODE = !gSettings.DEBUG_MODE;
   }
 }

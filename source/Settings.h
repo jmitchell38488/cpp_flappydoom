@@ -23,3 +23,6 @@ const float BIRD_X = GAME_WIDTH / 4;
 const float BIRD_Y = GAME_HEIGHT / 3;
 const float BIRD_ANGLE = 45.0f;
 const float BIRD_JUMP = 16.5f;
+const float BIRD_SW = 61.0f;
+const float BIRD_SH = 71.0f;
+const float BIRD_SF = 1.0f;

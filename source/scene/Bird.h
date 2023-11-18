@@ -38,13 +38,13 @@ Bird::Bird() {
 }
 
 void Bird::init() {
-	for (int i = 0; i < 5; i++) addFrame(new olc::Sprite((std::string)"./assets/bird/" + std::to_string(i) + ".png"));
+	// for (int i = 0; i < 5; i++) addFrame(new olc::Sprite((std::string)"./assets/bird/" + std::to_string(i) + ".png"));
+	addHorzSprite(new olc::Sprite((std::string)"./assets/sprite-bird.png"), 5, BIRD_SW, BIRD_SH, BIRD_SF);
 	setPosition({ BIRD_X, BIRD_Y });
-	setScale(0.5);
 }
 
 float Bird::getWidth() {
-  return fCurFrame->sprite->width * fScaleFactor;
+  return fCurFrame->sw;
 }
 
 bool Bird::checkCollisionBounds() {
@@ -52,7 +52,7 @@ bool Bird::checkCollisionBounds() {
   if (fPosition.y < GROUND_HEIGHT) {
     return true;
   }
-  float dh = fCurFrame->sprite->height * fScaleFactor;
+  float dh = fCurFrame->sh;
   if (fPosition.y + dh > GAME_HEIGHT - GROUND_HEIGHT) {
     return true;
   }
@@ -122,9 +122,9 @@ BirdData Bird::getBirdColMask() {
   bd.cy = fRotPosition.y;
   bd.dx = fPosition.x;
   bd.dy = fPosition.y;
-  bd.dw = fCurFrame->sprite->width * fScaleFactor;
-  bd.dh = fCurFrame->sprite->height * fScaleFactor;
-  bd.r = fCurFrame->sprite->width / 2 * fScaleFactor * 0.9;
+  bd.dw = fCurFrame->sw;
+  bd.dh = fCurFrame->sh;
+  bd.r = fCurFrame->sw / 2 * 0.95;
 
   return bd;
 }
