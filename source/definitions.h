@@ -10,6 +10,7 @@ struct GameSettings {
   bool VSYNC_MODE;
   bool FS_MODE;
   bool CLAMP_DIFFICULTY;
+  bool GAME_PAUSED;
   float P_GAP;
 
   public:
@@ -18,6 +19,7 @@ struct GameSettings {
     VSYNC_MODE = true;
     FS_MODE = false;
     CLAMP_DIFFICULTY = false;
+    GAME_PAUSED = false;
     P_GAP = PIPE_GAP;
   }
 };

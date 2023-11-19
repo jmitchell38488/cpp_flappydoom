@@ -13,7 +13,7 @@ const float FPS = 60.0f;
 const float GAME_TICK = 1.0f / FPS;
 const float ANIM_TICK = 1.0f / 12.0f;
 const float GAME_SPEED = 1.0f / 250.0f;
-const float BG_SPEED = 1.0f / 90.0f;
+const float BG_SPEED = 0.75f;
 const float SCROLL_SPEED = 4.0f * ANIM_TICK;
 
 // Gravity
@@ -31,6 +31,6 @@ const float BIRD_SF = 1.0f;
 const float PIPE_SW = 62.0f;
 const float PIPE_SH = 300.0f;
 const float PIPE_SF = 1.0f;
-const float PIPE_GAP = GAME_HEIGHT / 3;
+const float PIPE_GAP = 155.0f;
 
 const bool ENABLE_DEBUG_MODE = false;

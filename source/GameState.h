@@ -1,5 +1,5 @@
 #pragma once
 
 enum class GameState {
-  IDLE, PLAYING, GAMEOVER
+  IDLE, PLAYING, GAMEOVER, PAUSED
 };

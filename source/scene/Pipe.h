@@ -64,6 +64,7 @@ public:
   void reset(float offX, bool first);
   void update(float fElapsedTime, float gameSpeed);
   float getX();
+  float getY();
 };
 
 GameEngine * Pipe::gEngine = nullptr;
@@ -226,4 +227,8 @@ void Pipe::setOffY(bool first)
 float Pipe::getX()
 {
   return fOffX;
+}
+
+float Pipe::getY() {
+  return fOffY;
 }

@@ -59,6 +59,7 @@ void Pipes::update(float fElapsedTime, float gameSpeed)
 {
   if (state == PipesState::SCROLLING)
   {
+    float lp_offy = 0.0f;
     for (auto pipe : vPipes)
     {
       if (pipe->isPast() && pipe->bTraversed)
@@ -67,8 +68,12 @@ void Pipes::update(float fElapsedTime, float gameSpeed)
       }
       else
       {
+        if (!pipe->isVisible() && lp_offy == pipe->getY() && pipe != vPipes[0]) {
+          pipe->reset(pipe->getX(), false);
+        }
         pipe->update(fElapsedTime, gameSpeed);
       }
+      lp_offy = pipe->getY();
     }
   }
 }
