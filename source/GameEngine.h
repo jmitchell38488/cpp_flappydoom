@@ -22,8 +22,11 @@
 #include "GameScript.h"
 #include "Settings.h"
 #include "Score.h"
+#include "Util.h"
 
 #include <list>
+#include <chrono>
+#include <ctime>
 
 class GameSoundManager {
 private:
@@ -203,6 +206,7 @@ public:
   GameDifficulty *gDifficulty = nullptr;
   Scene *gScene = nullptr;
   GameScriptProcessor *gScriptProcessor = nullptr;
+  std::chrono::time_point<std::chrono::system_clock> m_tp1, m_tp2;
 
 protected:
   void handleInput(float fElapsedTime);
@@ -219,6 +223,7 @@ public:
   void run();
   bool OnUserCreate() override;
   bool OnUserUpdate(float fElapsedTime) override;
+  float getRunTime();
 };
 
 GameEngine::GameEngine()
@@ -229,6 +234,8 @@ GameEngine::GameEngine()
   gDifficulty = new GameDifficulty();
   gScriptProcessor = new GameScriptProcessor();
   gScene = new Scene(this);
+  m_tp1 = std::chrono::system_clock::now();
+  m_tp2 = std::chrono::system_clock::now();
 }
 
 GameEngine::~GameEngine()
@@ -480,6 +487,12 @@ bool GameEngine::OnUserUpdate(float fElapsedTime)
   return update(fElapsedTime);
 }
 
+float GameEngine::getRunTime() {
+  m_tp2 = std::chrono::system_clock::now();
+  std::chrono::duration<float> elapsedTime = m_tp2 - m_tp1;
+  return elapsedTime.count();
+}
+
 void GameEngine::run()
 {
   if (Construct(GAME_WIDTH, GAME_HEIGHT, GAME_PIXEL, GAME_PIXEL, gSettings.FS_MODE, gSettings.VSYNC_MODE, true))
@@ -525,7 +538,7 @@ float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
     sPipes.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2);
   }
 
-  sBird.update(fElapsedTime);
+  sBird.update(fElapsedTime, gEngine->getRunTime());
 
   if (checkCollisions() && gEngine->gState == GameState::PLAYING)
   {
@@ -566,9 +579,13 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
   sBird.render(engine, fElapsedTime);
 
   if (gEngine->gState == GameState::PAUSED) {
+    auto c_time = std::chrono::system_clock::now();
+    float time = c_time.time_since_epoch().count() / 1000;
+
+    uint8_t alpha = (int) std::round(sine_between(gEngine->getRunTime(), 2, 0.25, 0.85) * 255) & 0xFF;
     float offX = GAME_WIDTH / 2 - sPaused->width / 2;
     float offY = GAME_HEIGHT / 2 - sPaused->height / 2;
-    engine->DrawDecal({offX, offY}, dPaused, {1.0f, 1.0f});
+    engine->DrawDecal({offX, offY}, dPaused, {1.0f, 1.0f}, {255,255,255,alpha});
   }
 }
 

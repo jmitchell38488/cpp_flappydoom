@@ -2,6 +2,7 @@
 #include "../Settings.h"
 #include "Animation.h"
 #include "BirdData.h"
+#include "../Util.h"
 
 enum class BirdState {
 	IDLE, DEAD, FLAP
@@ -21,7 +22,7 @@ public:
 	Bird();
 	void init();
 	bool checkCollisionBounds();
-	void update(float fElapsedTime);
+	void update(float fElapsedTime, float gameRunTime);
 	void reset();
 	void setPlaying();
 	void setDead();
@@ -60,22 +61,24 @@ bool Bird::checkCollisionBounds() {
 	return false;
 }
 
-void Bird::update(float fElapsedTime) {
-	if (state == BirdState::DEAD || !bCanAnimate) {
+void Bird::update(float fElapsedTime, float gameRunTime) {
+	if ((state == BirdState::DEAD || !bCanAnimate) && state != BirdState::IDLE) {
 		return;
 	}
-
-	// Bob up and down on a sin wave
-	// if (state == BirdState::IDLE) {
-	// 	return;
-	// }
 
 	// Update frame
 	Animation::update(fElapsedTime);
 
-	fVelocity += GRAVITY_TICK;
-  setPosition({ BIRD_X, (float)(fPosition.y + fVelocity * 0.5 + GRAVITY_TICK) });
-  rotate();
+	// Bob up and down on a sine wave
+	if (state == BirdState::IDLE) {
+		fVelocity = sine_between(gameRunTime, 2, -0.5, 0.5);
+		setPosition({ BIRD_X, (float)(fPosition.y + fVelocity) });
+	} else {
+		fVelocity += GRAVITY_TICK;
+		rotate();
+		setPosition({ BIRD_X, (float)(fPosition.y + fVelocity * 0.5 + GRAVITY_TICK) });
+	}
+  
 }
 
 void Bird::flapped() {

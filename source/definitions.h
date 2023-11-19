@@ -5,6 +5,9 @@
 
 #include "Settings.h"
 
+#include <chrono>
+#include <ctime>
+
 struct GameSettings {
   bool DEBUG_MODE;
   bool VSYNC_MODE;
