@@ -10,7 +10,7 @@ enum class BirdState {
 
 class Bird : public Animation {
 
-private:
+protected:
 	BirdState state = BirdState::IDLE;
 
 	float fVelocity = 0.0f;

@@ -19,6 +19,7 @@
 #include "scene/Ceiling.h"
 #include "scene/Pipes.h"
 #include "scene/Pipe.h"
+#include "scene/SplashBird.h"
 #include "GameState.h"
 #include "GameDifficulty.h"
 #include "GameScript.h"
@@ -56,7 +57,7 @@ private:
   float aVol = 0.25f;
 
 private:
-  void AdjustVol(int sound, float vol = 1.0f)
+  void adjustVol(int sound, float vol = 1.0f)
   {
     if (vol != 1.0f)
     {
@@ -66,7 +67,7 @@ private:
   }
 
 public:
-  void LoadResources()
+  void loadResources()
   {
     aBgMusic = ma.LoadSound("./assets/sound/theme.mp3");
     aBirdFlap = ma.LoadSound("./assets/sound/wing2.wav");
@@ -74,13 +75,13 @@ public:
     aBirdScore = ma.LoadSound("./assets/sound/point2.wav");
   }
 
-  void StartGame()
+  void startGame()
   {
     ma.SetVolume(aBgMusic, aVol);
     ma.Play(aBgMusic, true);
   }
 
-  void SetGlobalVolume(float vol)
+  void setGlobalVolume(float vol)
   {
     aVol = vol;
     ma.SetVolume(aBgMusic, aVol);
@@ -89,32 +90,32 @@ public:
     ma.SetVolume(aBirdScore, aVol);
   }
 
-  void PlayFlap(float vol = 1.0f)
+  void playFlap(float vol = 1.0f)
   {
-    AdjustVol(aBirdFlap, vol);
+    adjustVol(aBirdFlap, vol);
 
     if (!ma.IsPlaying(aBirdFlap))
       ma.Stop(aBirdFlap);
     ma.Play(aBirdFlap);
   }
 
-  void PlayDeath(float vol = 1.0f)
+  void playDeath(float vol = 1.0f)
   {
-    AdjustVol(aBirdDeath, vol);
+    adjustVol(aBirdDeath, vol);
     if (!ma.IsPlaying(aBirdDeath))
       ma.Stop(aBirdDeath);
     ma.Play(aBirdDeath);
   }
 
-  void PlayScore(float vol = 1.0f)
+  void playScore(float vol = 1.0f)
   {
-    AdjustVol(aBirdScore, vol);
+    adjustVol(aBirdScore, vol);
     if (!ma.IsPlaying(aBirdScore))
       ma.Stop(aBirdScore);
     ma.Play(aBirdScore);
   }
 
-  void PauseGame()
+  void pauseGame()
   {
     bBgMusicPlaying = ma.IsPlaying(aBgMusic);
     bBirdFlapPlaying = ma.IsPlaying(aBirdFlap);
@@ -130,7 +131,7 @@ public:
       ma.Toggle(aBirdScore);
   }
 
-  void ResumeGame()
+  void resumeGame()
   {
     ma.Toggle(aBgMusic);
     if (bBirdFlapPlaying)
@@ -146,7 +147,7 @@ public:
     bBirdScorePlaying = false;
   }
 
-  void Cleanup()
+  void cleanup()
   {
     if (ma.IsPlaying(aBgMusic))
       ma.Stop(aBgMusic);
@@ -193,7 +194,6 @@ private:
   uint16_t gTopScore;
 
   GameEngine *gEngine = nullptr;
-  GameSoundManager gSoundMan;
 
   std::unique_ptr<olc::Font> doomFont;
 
@@ -223,10 +223,12 @@ private:
   bool bTransLogo = true;
   olc::vf2d vPosition;
   float fTransFrame = 0.0f;
+  float fLastFlapT = 0.0f;
 
   GameEngine *gEngine = nullptr;
   olc::Sprite * sLogo = nullptr;
-  olc::Decal * dLogo = nullptr;;
+  olc::Decal * dLogo = nullptr;
+  SplashBird * sBird = nullptr;
 
 public:
   MenuScreen();
@@ -268,6 +270,7 @@ public:
   Scene *gScene = nullptr;
   GameScriptProcessor *gScriptProcessor = nullptr;
   std::chrono::time_point<std::chrono::system_clock> m_tp1, m_tp2;
+  GameSoundManager * gSoundMan;
 
 protected:
   void handleInput(float fElapsedTime);
@@ -303,6 +306,7 @@ GameEngine::GameEngine()
   gScriptProcessor = new GameScriptProcessor();
   gScene = new Scene(this);
   gMenu = new MenuScreen(this);
+  gSoundMan = new GameSoundManager();
   m_tp1 = std::chrono::system_clock::now();
   m_tp2 = std::chrono::system_clock::now();
 }
@@ -316,6 +320,7 @@ bool GameEngine::initialise()
   gMenu->init();
   gScene->initScene();
   gDifficulty->setDifficulty(DifficultyMode::EASY);
+  gSoundMan->loadResources();
   gState = GameState::MENU;
   gScreen = GameScreenState::SPLASHSCREEN;
   bPlaying = false;
@@ -624,8 +629,6 @@ void Scene::loadAssets()
   dPaused = new olc::Decal(sPaused);
 
   doomFont = std::make_unique<olc::Font>("./assets/doomfont40.png");
-
-  gSoundMan.LoadResources();
 }
 
 void Scene::initScene()
@@ -757,7 +760,7 @@ void Scene::setGameState(GameState state)
     break;
 
   case GameState::GAMEOVER:
-    gSoundMan.PlayDeath();
+    gEngine->gSoundMan->playDeath();
     sBird.setDead();
     sBackground.setIdle();
     sGround.setIdle();
@@ -769,13 +772,13 @@ void Scene::setGameState(GameState state)
 
 void Scene::jump()
 {
-  gSoundMan.PlayFlap();
+  gEngine->gSoundMan->playFlap();
   sBird.flapped();
 }
 
 void Scene::score()
 {
-  gSoundMan.PlayScore();
+  gEngine->gSoundMan->playScore();
 }
 
 Scene::Scene() {}
@@ -787,21 +790,21 @@ Scene::Scene(GameEngine *engine)
 
 Scene::~Scene()
 {
-  gSoundMan.Cleanup();
+  gEngine->gSoundMan->cleanup();
 }
 
 void Scene::resumeGame()
 {
-  gSoundMan.ResumeGame();
+  gEngine->gSoundMan->resumeGame();
 }
 
 void Scene::pauseGame()
 {
-  gSoundMan.PauseGame();
+  gEngine->gSoundMan->pauseGame();
 }
 
 void Scene::startGame() {
-  gSoundMan.StartGame();
+  gEngine->gSoundMan->startGame();
 }
 
 MenuScreen::MenuScreen() {
@@ -819,12 +822,23 @@ MenuScreen::~MenuScreen() {
 
 void MenuScreen::init() {
   loadAssets();
+  sBird = new SplashBird(SB_ANIM_DIR::RIGHT);
+  sBird->init();
 }
 
 void MenuScreen::tick(float fElapsedTime) {
+  float fRt = gEngine->getRunTime();
   float fY = GAME_HEIGHT / 2 - sLogo->height / 2;
   float fDuration = FPS * 1.5; // 3.5 seconds
   if (gEngine->gScreen == GameScreenState::SPLASHSCREEN) {
+    // Bird movement
+    sBird->update(fElapsedTime, fRt);
+
+    if (fRt - fLastFlapT > 1.3) {
+      gEngine->gSoundMan->playFlap();
+      fLastFlapT = fRt;
+    }
+
     if ((int)vPosition.y > (int)fY) {
       float fNormalizedTime = fTransFrame > 0 ? fTransFrame / fDuration : 0;
       float fEasedT = ease_in_ease_out(fNormalizedTime);
@@ -833,7 +847,7 @@ void MenuScreen::tick(float fElapsedTime) {
       vPosition.y = GAME_HEIGHT - ((GAME_HEIGHT - fY) * fEasedT);
       return;
     }
-    if (3.0f < gEngine->getRunTime()) {
+    if (3.0f < fRt) {
       bTransLogo = false;
       gEngine->setGameState(GameState::IDLE);
       gEngine->gState = GameState::MENU;
@@ -869,8 +883,8 @@ void MenuScreen::render(olc::PixelGameEngine *engine, float fElapsedTime) {
   }
 
   if (gEngine->gScreen == GameScreenState::SPLASHSCREEN) {
+    sBird->render(engine, fElapsedTime);
     engine->DrawDecal(vPosition, dLogo);
-
     engine->DrawStringDecal({20, 20}, "Time: " + std::to_string(gEngine->getRunTime()));
     return;
   }
