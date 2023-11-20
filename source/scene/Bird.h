@@ -23,7 +23,7 @@ public:
 	Bird();
 	void init();
 	bool checkCollisionBounds();
-	void update(float fElapsedTime, float gameRunTime);
+	void update(float fElapsedTime, float gameRunTime, bool canAnimate);
 	void reset();
 	void setPlaying();
 	void setDead();
@@ -62,7 +62,8 @@ bool Bird::checkCollisionBounds() {
 	return false;
 }
 
-void Bird::update(float fElapsedTime, float gameRunTime) {
+void Bird::update(float fElapsedTime, float gameRunTime, bool canAnimate = true) {
+	if (!canAnimate) return; // Exit early, this is set during the menu screen
 	if ((state == BirdState::DEAD || !bCanAnimate) && state != BirdState::IDLE) {
 		return;
 	}

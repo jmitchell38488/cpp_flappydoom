@@ -2,16 +2,7 @@
 
 #include "definitions.h"
 #include "Settings.h"
-
-enum class DifficultyMode
-{
-  EASY,
-  MEDIUM,
-  HARD,
-  NIGHTMARE,
-  IMPOSSIBLE,
-  NOCHANGE
-};
+#include "DifficultyMode.h"
 
 class GameDifficulty
 {

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstring>
 #include <codecvt>
+#include <cmath>
 
 using namespace std;
 
@@ -98,4 +99,8 @@ void string_to_lower(std::string str)
       c = std::tolower(c);
     }
   }
+}
+
+float ease_in_ease_out(float normTime) {
+    return normTime < 0.5f ? 0.5f * pow(2 * normTime, 2) : -0.5f * (pow(2 * normTime - 2, 2) - 2);
 }

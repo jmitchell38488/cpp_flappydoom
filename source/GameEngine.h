@@ -30,7 +30,16 @@
 #include <chrono>
 #include <ctime>
 
-class GameSoundManager {
+enum class GameScreenState {
+  SPLASHSCREEN,
+  DIFFICULTYSELECT,
+  HIGHSCORES,
+  GAME,
+  RESUME
+};
+
+class GameSoundManager
+{
 private:
   int aBgMusic;
   int aBirdFlap;
@@ -47,27 +56,32 @@ private:
   float aVol = 0.25f;
 
 private:
-  void AdjustVol(int sound, float vol = 1.0f) {
-    if (vol != 1.0f) {
+  void AdjustVol(int sound, float vol = 1.0f)
+  {
+    if (vol != 1.0f)
+    {
       float nVol = std::fmax(0.0f, std::fmin(1.0f, vol));
       ma.SetVolume(sound, nVol);
     }
   }
 
 public:
-  void LoadResources() {
+  void LoadResources()
+  {
     aBgMusic = ma.LoadSound("./assets/sound/theme.mp3");
     aBirdFlap = ma.LoadSound("./assets/sound/wing2.wav");
     aBirdDeath = ma.LoadSound("./assets/sound/hit2.wav");
     aBirdScore = ma.LoadSound("./assets/sound/point2.wav");
   }
 
-  void StartGame() {
+  void StartGame()
+  {
     ma.SetVolume(aBgMusic, aVol);
     ma.Play(aBgMusic, true);
   }
 
-  void SetGlobalVolume(float vol) {
+  void SetGlobalVolume(float vol)
+  {
     aVol = vol;
     ma.SetVolume(aBgMusic, aVol);
     ma.SetVolume(aBirdFlap, aVol);
@@ -75,45 +89,56 @@ public:
     ma.SetVolume(aBirdScore, aVol);
   }
 
-  void PlayFlap(float vol = 1.0f) {
+  void PlayFlap(float vol = 1.0f)
+  {
     AdjustVol(aBirdFlap, vol);
 
-  if (!ma.IsPlaying(aBirdFlap))
+    if (!ma.IsPlaying(aBirdFlap))
       ma.Stop(aBirdFlap);
     ma.Play(aBirdFlap);
   }
 
-  void PlayDeath(float vol = 1.0f) {
+  void PlayDeath(float vol = 1.0f)
+  {
     AdjustVol(aBirdDeath, vol);
     if (!ma.IsPlaying(aBirdDeath))
       ma.Stop(aBirdDeath);
     ma.Play(aBirdDeath);
   }
 
-  void PlayScore(float vol = 1.0f) {
+  void PlayScore(float vol = 1.0f)
+  {
     AdjustVol(aBirdScore, vol);
     if (!ma.IsPlaying(aBirdScore))
       ma.Stop(aBirdScore);
     ma.Play(aBirdScore);
   }
 
-  void PauseGame() {
+  void PauseGame()
+  {
     bBgMusicPlaying = ma.IsPlaying(aBgMusic);
     bBirdFlapPlaying = ma.IsPlaying(aBirdFlap);
     bBirdDeathPlaying = ma.IsPlaying(aBirdDeath);
     bBirdScorePlaying = ma.IsPlaying(aBirdScore);
 
     ma.Toggle(aBgMusic);
-    if (bBirdFlapPlaying) ma.Toggle(aBirdFlap);
-    if (bBirdDeathPlaying) ma.Toggle(aBirdDeath);
-    if (bBirdScorePlaying) ma.Toggle(aBirdScore);
+    if (bBirdFlapPlaying)
+      ma.Toggle(aBirdFlap);
+    if (bBirdDeathPlaying)
+      ma.Toggle(aBirdDeath);
+    if (bBirdScorePlaying)
+      ma.Toggle(aBirdScore);
   }
 
-  void ResumeGame() {
+  void ResumeGame()
+  {
     ma.Toggle(aBgMusic);
-    if (bBirdFlapPlaying) ma.Toggle(aBirdFlap);
-    if (bBirdDeathPlaying) ma.Toggle(aBirdDeath);
-    if (bBirdScorePlaying) ma.Toggle(aBirdScore);
+    if (bBirdFlapPlaying)
+      ma.Toggle(aBirdFlap);
+    if (bBirdDeathPlaying)
+      ma.Toggle(aBirdDeath);
+    if (bBirdScorePlaying)
+      ma.Toggle(aBirdScore);
 
     bBgMusicPlaying = false;
     bBirdFlapPlaying = false;
@@ -121,7 +146,8 @@ public:
     bBirdScorePlaying = false;
   }
 
-  void Cleanup() {
+  void Cleanup()
+  {
     if (ma.IsPlaying(aBgMusic))
       ma.Stop(aBgMusic);
     if (ma.IsPlaying(aBirdFlap))
@@ -160,9 +186,8 @@ private:
   float fFirstPipe = GAME_WIDTH / 1.5;
   float fPipeGap = GAME_WIDTH / 3;
   float fGameDistance = 0.0f;
-  float fRenders = 0.0f;
-  olc::Sprite * sPaused;
-  olc::Decal * dPaused;
+  olc::Sprite *sPaused;
+  olc::Decal *dPaused;
 
   uint16_t gCurScore;
   uint16_t gTopScore;
@@ -186,6 +211,36 @@ public:
   void score();
   void resumeGame();
   void pauseGame();
+  void startGame();
+};
+
+class GameEngine;
+
+class MenuScreen
+{
+private:
+  std::unique_ptr<olc::Font> doomFont;
+  bool bTransLogo = true;
+  olc::vf2d vPosition;
+  float fTransFrame = 0.0f;
+
+  GameEngine *gEngine = nullptr;
+  olc::Sprite * sLogo = nullptr;
+  olc::Decal * dLogo = nullptr;;
+
+public:
+  MenuScreen();
+  MenuScreen(GameEngine *engine);
+  ~MenuScreen();
+
+private:
+  void loadAssets();
+
+public:
+  void init();
+  void tick(float fElapsedTime);
+  void handleInput(float fElapsedTime);
+  void render(olc::PixelGameEngine *engine, float fElapsedTime);
 };
 
 class GameEngine : public olc::PixelGameEngine
@@ -202,11 +257,13 @@ private:
   float fLastAnimTime = 0.0f;
   float fLag = 0.0f;
   GameState gLastState;
+  MenuScreen *gMenu;
 
 public:
   float fGameScore = 0.0f;
   bool bPlaying = false;
   GameState gState;
+  GameScreenState gScreen;
   GameDifficulty *gDifficulty = nullptr;
   Scene *gScene = nullptr;
   GameScriptProcessor *gScriptProcessor = nullptr;
@@ -228,7 +285,14 @@ public:
   bool OnUserCreate() override;
   bool OnUserUpdate(float fElapsedTime) override;
   float getRunTime();
+  bool isGamePlaying();
+  void setPlaying();
+  void quit();
 };
+
+bool GameEngine::isGamePlaying() {
+  return gScreen == GameScreenState::GAME;
+}
 
 GameEngine::GameEngine()
 {
@@ -238,6 +302,7 @@ GameEngine::GameEngine()
   gDifficulty = new GameDifficulty();
   gScriptProcessor = new GameScriptProcessor();
   gScene = new Scene(this);
+  gMenu = new MenuScreen(this);
   m_tp1 = std::chrono::system_clock::now();
   m_tp2 = std::chrono::system_clock::now();
 }
@@ -248,9 +313,11 @@ GameEngine::~GameEngine()
 
 bool GameEngine::initialise()
 {
+  gMenu->init();
   gScene->initScene();
   gDifficulty->setDifficulty(DifficultyMode::EASY);
-  gState = GameState::IDLE;
+  gState = GameState::MENU;
+  gScreen = GameScreenState::SPLASHSCREEN;
   bPlaying = false;
   return true;
 }
@@ -262,6 +329,12 @@ void GameEngine::setGameState(GameState state)
 
   switch (state)
   {
+  case GameState::MENU:
+    bPlaying = false;
+    gScene->setGameState(GameState::IDLE);
+    gScreen = GameScreenState::SPLASHSCREEN;
+    break;
+
   case GameState::PLAYING:
     bPlaying = true;
     break;
@@ -310,10 +383,17 @@ void GameEngine::jump()
 
 void GameEngine::handleInput(float fElapsedTime)
 {
+  if (gState == GameState::MENU) {
+    gMenu->handleInput(fElapsedTime);
+    return;
+  }
+
   if (GetKey(olc::Key::SPACE).bPressed)
   {
     if (gState == GameState::GAMEOVER)
     {
+      gScore.pushScore({gScore.score, gScore.runs, gDifficulty->getMode()});
+
       if (gScore.score > gScore.topScore)
         gScore.topScore = gScore.score;
       gScore.runs++;
@@ -332,12 +412,15 @@ void GameEngine::handleInput(float fElapsedTime)
 
   if (GetKey(olc::Key::ENTER).bPressed)
   {
-    if (gState != GameState::PAUSED) {
+    if (gState != GameState::PAUSED)
+    {
       gLastState = gState;
       setGameState(GameState::PAUSED);
       gScene->pauseGame();
       gSettings.GAME_PAUSED = true;
-    } else {
+    }
+    else
+    {
       setGameState(gLastState);
       gScene->resumeGame();
       fAccumulatedTime = fElapsedTime;
@@ -347,18 +430,20 @@ void GameEngine::handleInput(float fElapsedTime)
 
   if (GetKey(olc::Key::ESCAPE).bPressed)
   {
-    if (gState == GameState::GAMEOVER)
-    {
-      if (gScore.score > gScore.topScore)
-        gScore.topScore = gScore.score;
-      gScore.runs++;
-    }
-    resetGame();
+    gScreen = GameScreenState::RESUME;
+    gState = GameState::MENU;
+    // if (gState == GameState::GAMEOVER)
+    // {
+    //   if (gScore.score > gScore.topScore)
+    //     gScore.topScore = gScore.score;
+    //   gScore.runs++;
+    // }
+    // resetGame();
   }
 
   if (GetKey(olc::Key::Q).bPressed)
   {
-    exit(0);
+    quit();
   }
 
   if (GetKey(olc::Key::D).bPressed)
@@ -449,8 +534,12 @@ void GameEngine::doGameUpdate(float fElapsedTime)
       gScene->score();
     }
 
-    float fGameDistance = gScene->tick(fElapsedTime, gDifficulty);
-    gDifficulty->gameUpdate(fGameDistance);
+    if (gState == GameState::MENU) {
+      gMenu->tick(fElapsedTime);
+    } else {
+      float fGameDistance = gScene->tick(fElapsedTime, gDifficulty);
+      gDifficulty->gameUpdate(fGameDistance);
+    }
     fAccumulatedTime -= fElapsedTime;
   }
 }
@@ -469,7 +558,12 @@ bool GameEngine::update(float fElapsedTime)
   handleInput(fAccumulatedTime);
   doGameUpdate(GAME_TICK);
 
-  gScene->render(this, fElapsedTime);
+  // Always render the game in the background for the RESUME screen
+  if (gState != GameState::MENU || (gState == GameState::MENU && gScreen != GameScreenState::SPLASHSCREEN))
+    gScene->render(this, fElapsedTime);
+  
+  if (gState == GameState::MENU)
+    gMenu->render(this, fElapsedTime);
 
   return true;
 }
@@ -489,10 +583,25 @@ bool GameEngine::OnUserUpdate(float fElapsedTime)
   return update(fElapsedTime);
 }
 
-float GameEngine::getRunTime() {
+float GameEngine::getRunTime()
+{
   m_tp2 = std::chrono::system_clock::now();
   std::chrono::duration<float> elapsedTime = m_tp2 - m_tp1;
   return elapsedTime.count();
+}
+
+void GameEngine::setPlaying() {
+  gScreen = GameScreenState::GAME;
+  setGameState(GameState::IDLE);
+  gScene->startGame();
+}
+
+void GameEngine::quit() {
+  // if (gScene != nullptr) gScene->~Scene();
+  // if (gMenu != nullptr) gMenu->~MenuScreen();
+  // if (gDifficulty != nullptr) gDifficulty->~GameDifficulty();
+  // if (gScriptProcessor != nullptr) gScriptProcessor->~GameScriptProcessor();
+  exit(0);
 }
 
 void GameEngine::run()
@@ -511,10 +620,10 @@ void Scene::loadAssets()
   sCeiling.init();
   sPipes.init(BIRD_X + BIRD_SW);
 
-  sPaused = new olc::Sprite((std::string)"./assets/i-paused.png");
+  sPaused = new olc::Sprite((std::string) "./assets/i-paused.png");
   dPaused = new olc::Decal(sPaused);
 
-  doomFont = std::make_unique<olc::Font>( "./assets/doomfont40.png" );
+  doomFont = std::make_unique<olc::Font>("./assets/doomfont40.png");
 
   gSoundMan.LoadResources();
 }
@@ -527,8 +636,6 @@ void Scene::initScene()
   sGround.setIdle();
   sCeiling.setIdle();
   sPipes.setIdle();
-  
-  gSoundMan.StartGame();
 }
 
 float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
@@ -542,7 +649,7 @@ float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
     sPipes.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2, gEngine->gDifficulty->getPipeGap());
   }
 
-  sBird.update(fElapsedTime, gEngine->getRunTime());
+  sBird.update(fElapsedTime, gEngine->getRunTime(), gEngine->isGamePlaying() && gEngine->gState != GameState::GAMEOVER);
 
   if (checkCollisions() && gEngine->gState == GameState::PLAYING)
   {
@@ -559,15 +666,15 @@ bool Scene::checkCollisions()
 
 void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
 {
-  fRenders++;
   engine->Clear(olc::BLACK);
 
   sBackground.render(engine, fElapsedTime);
   sPipes.render(engine, fElapsedTime);
   sGround.render(engine, fElapsedTime);
   sCeiling.render(engine, fElapsedTime);
-  
-  if (ENABLE_DEBUG_MODE) {
+
+  if (ENABLE_DEBUG_MODE)
+  {
     engine->DrawStringDecal({20, 20}, "Score: " + std::to_string((int)std::round(gScore.score)));
     engine->DrawStringDecal({20, 35}, "Difficulty: " + gEngine->gDifficulty->getMode() + (gSettings.CLAMP_DIFFICULTY ? " [clamped!]" : "") + " [vel: " + std::to_string(gEngine->gDifficulty->gameSpeed()) + ", fac: " + std::to_string(gEngine->gDifficulty->getScale()) + "]");
     engine->DrawStringDecal({20, 50}, "Runs: " + std::to_string((int)gScore.runs));
@@ -578,7 +685,7 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
 
     engine->DrawStringDecal({20, 100}, "Pipe gap: " + std::to_string((int)std::round(gSettings.P_GAP)));
   }
-  
+
   olc::vi2d fSize;
   float offX;
   std::string str = "Score: " + std::to_string((int)std::round(gScore.score));
@@ -606,14 +713,15 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
   // Render last z index
   sBird.render(engine, fElapsedTime);
 
-  if (gEngine->gState == GameState::PAUSED) {
+  if (gEngine->gState == GameState::PAUSED)
+  {
     auto c_time = std::chrono::system_clock::now();
     float time = c_time.time_since_epoch().count() / 1000;
 
-    uint8_t alpha = (int) std::round(sine_between(gEngine->getRunTime(), 4, 0.65, 0.85) * 255) & 0xFF;
+    uint8_t alpha = (int)std::round(sine_between(gEngine->getRunTime(), 4, 0.65, 0.85) * 255) & 0xFF;
     float offX = GAME_WIDTH / 2 - sPaused->width / 2;
     float offY = GAME_HEIGHT / 2 - sPaused->height / 2;
-    engine->DrawDecal({offX, offY}, dPaused, {1.0f, 1.0f}, {alpha,alpha,alpha,alpha});
+    engine->DrawDecal({offX, offY}, dPaused, {1.0f, 1.0f}, {alpha, alpha, alpha, alpha});
   }
 }
 
@@ -682,10 +790,97 @@ Scene::~Scene()
   gSoundMan.Cleanup();
 }
 
-void Scene::resumeGame() {
+void Scene::resumeGame()
+{
   gSoundMan.ResumeGame();
 }
 
-void Scene::pauseGame() {
+void Scene::pauseGame()
+{
   gSoundMan.PauseGame();
+}
+
+void Scene::startGame() {
+  gSoundMan.StartGame();
+}
+
+MenuScreen::MenuScreen() {
+
+}
+
+MenuScreen::MenuScreen(GameEngine *engine) {
+  gEngine = engine;
+}
+
+MenuScreen::~MenuScreen() {
+
+}
+
+
+void MenuScreen::init() {
+  loadAssets();
+}
+
+void MenuScreen::tick(float fElapsedTime) {
+  float fY = GAME_HEIGHT / 2 - sLogo->height / 2;
+  float fDuration = FPS * 1.5; // 3.5 seconds
+  if (gEngine->gScreen == GameScreenState::SPLASHSCREEN) {
+    if ((int)vPosition.y > (int)fY) {
+      float fNormalizedTime = fTransFrame > 0 ? fTransFrame / fDuration : 0;
+      float fEasedT = ease_in_ease_out(fNormalizedTime);
+      fTransFrame++;
+      
+      vPosition.y = GAME_HEIGHT - ((GAME_HEIGHT - fY) * fEasedT);
+      return;
+    }
+    if (3.0f < gEngine->getRunTime()) {
+      bTransLogo = false;
+      gEngine->setGameState(GameState::IDLE);
+      gEngine->gState = GameState::MENU;
+      gEngine->gScreen = GameScreenState::DIFFICULTYSELECT;
+    }
+  }
+
+  if (gEngine->gScreen == GameScreenState::DIFFICULTYSELECT) {
+
+  }
+}
+
+void MenuScreen::handleInput(float fElapsedTime) {
+  if (gEngine->GetKey(olc::Key::Q).bPressed) gEngine->quit();
+
+  if (bTransLogo) return; // Block all input until logo displays
+
+  if (gEngine->GetKey(olc::Key::SPACE).bPressed)
+  {
+    gEngine->setPlaying();
+  }
+}
+
+void MenuScreen::render(olc::PixelGameEngine *engine, float fElapsedTime) {
+  switch (gEngine->gScreen) {
+    case GameScreenState::SPLASHSCREEN:
+    case GameScreenState::HIGHSCORES:
+      engine->Clear(olc::BLACK);
+      break;
+    
+    default: // do nothing
+      break;
+  }
+
+  if (gEngine->gScreen == GameScreenState::SPLASHSCREEN) {
+    engine->DrawDecal(vPosition, dLogo);
+
+    engine->DrawStringDecal({20, 20}, "Time: " + std::to_string(gEngine->getRunTime()));
+    return;
+  }
+  
+}
+
+void MenuScreen::loadAssets() {
+  doomFont = std::make_unique<olc::Font>("./assets/doomfont40.png");
+  sLogo = new olc::Sprite((std::string) "./assets/i-logo.png");
+  dLogo = new olc::Decal(sLogo);
+
+  vPosition = {(float)(GAME_WIDTH / 2 - sLogo->width / 2), (float)GAME_HEIGHT};
 }
