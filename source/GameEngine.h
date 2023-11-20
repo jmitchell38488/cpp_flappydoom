@@ -514,7 +514,7 @@ void Scene::loadAssets()
   sPaused = new olc::Sprite((std::string)"./assets/i-paused.png");
   dPaused = new olc::Decal(sPaused);
 
-  doomFont = std::make_unique<olc::Font>( "./assets/doomfont.png" );
+  doomFont = std::make_unique<olc::Font>( "./assets/doomfont40.png" );
 
   gSoundMan.LoadResources();
 }
@@ -581,20 +581,27 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
   
   olc::vi2d fSize;
   float offX;
+  std::string str = "Score: " + std::to_string((int)std::round(gScore.score));
+  string_to_lower(str);
 
-// Draw score
-  doomFont->DrawStringDecal({20, GAME_HEIGHT - 15}, "Score: " + std::to_string((int)std::round(gScore.score)), {0.3, 0.3});
-  fSize = doomFont->GetTextSizeProp(gEngine->gDifficulty->getMode());
-  offX = GAME_WIDTH / 2 - fSize.x / 2;
+  // Draw score
+  doomFont->DrawStringDecal({20, GAME_HEIGHT - 15}, str, {0.3, 0.3});
   if (gScore.score > gScore.topScore)
-      doomFont->DrawStringDecal({offX, GAME_HEIGHT - 15}, "New top score!", {0.3, 0.3});
-    else if (gScore.topScore > 0 && gScore.runs > 0)
-      doomFont->DrawStringDecal({offX, GAME_HEIGHT - 15}, "Top score: " + std::to_string((int)std::round(gScore.topScore)), {0.3, 0.3});
+    str = "New top score!";
+  else if (gScore.topScore > 0 && gScore.runs > 0)
+    str = "Top score: " + std::to_string((int)std::round(gScore.topScore));
+  string_to_lower(str);
+
+  fSize = doomFont->GetTextSizeProp(str);
+  offX = GAME_WIDTH / 2 - fSize.x / 2;
+  doomFont->DrawStringDecal({offX, GAME_HEIGHT - 15}, str, {0.3, 0.3});
 
   // Draw difficulty
+  str = gEngine->gDifficulty->getMode();
+  string_to_lower(str);
   fSize = doomFont->GetTextSizeProp(gEngine->gDifficulty->getMode());
   offX = GAME_WIDTH - fSize.x + 50;
-  doomFont->DrawStringDecal({offX, GAME_HEIGHT - 15}, gEngine->gDifficulty->getMode(), {0.3, 0.3});
+  doomFont->DrawStringDecal({offX, GAME_HEIGHT - 15}, str, {0.3, 0.3});
 
   // Render last z index
   sBird.render(engine, fElapsedTime);
