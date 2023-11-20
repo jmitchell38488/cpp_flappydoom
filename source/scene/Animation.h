@@ -24,7 +24,8 @@ protected:
 	olc::vf2d fCentre;
 	bool bCanAnimate = true;
 	bool bSprite = false;
-	float fScaleFactor = 1.0f;
+	float fScaleFactorX = 1.0f;
+	float fScaleFactorY = 1.0f;
 
 	float fAnimRate = ANIM_TICK;
 	float fLastAnimTime = 0.0f;
@@ -55,7 +56,8 @@ public:
 
 Animation::Animation(float scale, olc::vf2d pos)
 {
-	fScaleFactor = scale;
+	fScaleFactorX = scale;
+	fScaleFactorY = scale;
 	fPosition = pos;
 }
 
@@ -82,7 +84,8 @@ void Animation::addHorzSprite(olc::Sprite *sprite, int n, float sw, float sh, fl
 
 void Animation::setScale(float scale)
 {
-	fScaleFactor = scale;
+	fScaleFactorX = scale;
+	fScaleFactorY = scale;
 
 	if (fFrames.size() > 0)
 	{
@@ -90,13 +93,13 @@ void Animation::setScale(float scale)
 		{
 			if (!frame->bPartial)
 			{
-				frame->sw = frame->sprite->width * fScaleFactor;
-				frame->sh = frame->sprite->height * fScaleFactor;
+				frame->sw = frame->sprite->width * fScaleFactorX;
+				frame->sh = frame->sprite->height * fScaleFactorY;
 			}
 			else
 			{
-				frame->sw = frame->ow * fScaleFactor;
-				frame->sh = frame->oh * fScaleFactor;
+				frame->sw = frame->ow * fScaleFactorX;
+				frame->sh = frame->oh * fScaleFactorY;
 			}
 		}
 	}
@@ -126,8 +129,8 @@ void Animation::addFrame(olc::Sprite *sprite, float sw = 0, float sh = 0, float 
 	frame->offY = offY;
 	frame->ow = sw;
 	frame->oh = sh;
-	frame->sw = partial ? sw * fScaleFactor : sprite->width * fScaleFactor;
-	frame->sh = partial ? sh * fScaleFactor : sprite->height * fScaleFactor;
+	frame->sw = partial ? sw * fScaleFactorX : sprite->width * fScaleFactorX;
+	frame->sh = partial ? sh * fScaleFactorY : sprite->height * fScaleFactorY;
 	frame->bPartial = partial;
 
 	fFrames.push_back(frame);
@@ -166,7 +169,7 @@ olc::vf2d Animation::getPosition()
 
 olc::vf2d Animation::getScale()
 {
-	return {fScaleFactor, fScaleFactor};
+	return {fScaleFactorX, fScaleFactorY};
 }
 
 void Animation::render(olc::PixelGameEngine *engine, float fElapsedTime)

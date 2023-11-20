@@ -807,22 +807,18 @@ void Scene::startGame() {
   gEngine->gSoundMan->startGame();
 }
 
-MenuScreen::MenuScreen() {
-
-}
+MenuScreen::MenuScreen() {}
 
 MenuScreen::MenuScreen(GameEngine *engine) {
   gEngine = engine;
 }
 
-MenuScreen::~MenuScreen() {
-
-}
+MenuScreen::~MenuScreen() {}
 
 
 void MenuScreen::init() {
   loadAssets();
-  sBird = new SplashBird(SB_ANIM_DIR::RIGHT);
+  sBird = new SplashBird(SB_ANIM_DIR::LEFT);
   sBird->init();
 }
 

@@ -21,6 +21,7 @@ public:
 		Bird::init();
 		float fPosX = sAnimDir == SB_ANIM_DIR::RIGHT ? 0 - BIRD_SW : GAME_WIDTH;
 		setPosition({fPosX, 100});
+		if (sAnimDir == SB_ANIM_DIR::LEFT) fScaleFactorX = 0-fScaleFactorX;
 	}
 
 	bool checkCollisionBounds() {
