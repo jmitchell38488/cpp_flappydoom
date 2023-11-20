@@ -16,6 +16,7 @@ private:
 	float fVelocity = 0.0f;
 
 	bool bFlapped = false;
+	float fPrevVel = 0.0f;
 
 public:
 
@@ -71,7 +72,7 @@ void Bird::update(float fElapsedTime, float gameRunTime) {
 
 	// Bob up and down on a sine wave
 	if (state == BirdState::IDLE) {
-		fVelocity = sine_between(gameRunTime, 2, -0.5, 0.5);
+		fVelocity = sine_between(gameRunTime, 2, -0.25, 0.25);
 		setPosition({ BIRD_X, (float)(fPosition.y + fVelocity) });
 	} else {
 		fVelocity += GRAVITY_TICK;
@@ -96,22 +97,26 @@ void Bird::reset() {
 	bCanAnimate = false;
 	fVelocity = 0.0f;
 	fRotation = 0.0f;
+	fPrevVel = 0.0f;
 	bFlapped = false;
 }
 
 void Bird::setPlaying() {
 	state = BirdState::FLAP;
 	bCanAnimate = true;
+	fVelocity = fPrevVel;
 }
 
 void Bird::setDead() {
 	state = BirdState::DEAD;
 	bCanAnimate = false;
+	fPrevVel = 0.0f;
 }
 
 void Bird::setIdle() {
 	state = BirdState::IDLE;
 	bCanAnimate = false;
+	fPrevVel = fVelocity;
 }
 
 void Bird::rotate() {

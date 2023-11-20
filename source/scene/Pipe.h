@@ -31,6 +31,7 @@ private:
 
   float fMidY = GAME_HEIGHT / 2;
   float fGapY = 0.0f;
+  float fPipeGap = PIPE_GAP;
 
   olc::Decal *dPipes;
 
@@ -40,8 +41,6 @@ private:
 public:
   bool bTraversed = false;
   bool bFirst = false;
-
-  static GameEngine * gEngine;
 
 private:
   void setOffY(bool first);
@@ -62,12 +61,10 @@ public:
   bool isPast();
   void render(olc::PixelGameEngine *engine, float fElapsedTime);
   void reset(float offX, bool first);
-  void update(float fElapsedTime, float gameSpeed);
+  void update(float fElapsedTime, float gameSpeed, float pipeGap);
   float getX();
   float getY();
 };
-
-GameEngine * Pipe::gEngine = nullptr;
 
 Pipe::Pipe(float offX, float offY, olc::Decal *pipes, float sw, float sh, float scale, bool first, float scoreX)
 {
@@ -178,7 +175,7 @@ void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
   }
 }
 
-void Pipe::update(float fElapsedTime, float gameSpeed)
+void Pipe::update(float fElapsedTime, float gameSpeed, float pipeGap)
 {
   fOffX -= gameSpeed;
   colDataTop->dx = fOffX;
@@ -190,6 +187,8 @@ void Pipe::update(float fElapsedTime, float gameSpeed)
     bTraversed = true;
     gScore.newScore = true;
   }
+
+  fPipeGap = pipeGap;
 }
 
 void Pipe::reset(float offX, bool first)
@@ -211,7 +210,7 @@ void Pipe::setOffY(bool first)
     return;
   }
   
-  fVertGap = ENABLE_DEBUG_MODE ? gSettings.P_GAP : PIPE_GAP;
+  fVertGap = ENABLE_DEBUG_MODE ? gSettings.P_GAP : fPipeGap;
 
   float inc = std::floor(fVertGap * 1.25 / 2);
   int offset = (std::rand() % 4) - 2;

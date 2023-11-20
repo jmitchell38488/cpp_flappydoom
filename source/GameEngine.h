@@ -4,10 +4,12 @@
 #define OLC_PGEX_MINIAUDIO
 #define OLC_IMAGE_STB
 #define OLC_PGE_APPLICATION
+#define OLC_PGEX_FONT
 
 #include "lib/miniaudio.h"
 #include "lib/olcPGEX_MiniAudio.h"
 #include "lib/olcPixelGameEngine.h"
+#include "lib/olcPGEX_Font.h"
 
 #include "definitions.h"
 #include "scene/Bird.h"
@@ -168,6 +170,8 @@ private:
   GameEngine *gEngine = nullptr;
   GameSoundManager gSoundMan;
 
+  std::unique_ptr<olc::Font> doomFont;
+
 private:
   void loadAssets();
 
@@ -248,8 +252,6 @@ bool GameEngine::initialise()
   gDifficulty->setDifficulty(DifficultyMode::EASY);
   gState = GameState::IDLE;
   bPlaying = false;
-
-  Pipe::gEngine = this;
   return true;
 }
 
@@ -512,6 +514,8 @@ void Scene::loadAssets()
   sPaused = new olc::Sprite((std::string)"./assets/i-paused.png");
   dPaused = new olc::Decal(sPaused);
 
+  doomFont = std::make_unique<olc::Font>( "./assets/doomfont.png" );
+
   gSoundMan.LoadResources();
 }
 
@@ -535,7 +539,7 @@ float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
     sBackground.update(fElapsedTime);
     sGround.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2);
     sCeiling.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2);
-    sPipes.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2);
+    sPipes.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2, gEngine->gDifficulty->getPipeGap());
   }
 
   sBird.update(fElapsedTime, gEngine->getRunTime());
@@ -574,6 +578,23 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
 
     engine->DrawStringDecal({20, 100}, "Pipe gap: " + std::to_string((int)std::round(gSettings.P_GAP)));
   }
+  
+  olc::vi2d fSize;
+  float offX;
+
+// Draw score
+  doomFont->DrawStringDecal({20, GAME_HEIGHT - 15}, "Score: " + std::to_string((int)std::round(gScore.score)), {0.3, 0.3});
+  fSize = doomFont->GetTextSizeProp(gEngine->gDifficulty->getMode());
+  offX = GAME_WIDTH / 2 - fSize.x / 2;
+  if (gScore.score > gScore.topScore)
+      doomFont->DrawStringDecal({offX, GAME_HEIGHT - 15}, "New top score!", {0.3, 0.3});
+    else if (gScore.topScore > 0 && gScore.runs > 0)
+      doomFont->DrawStringDecal({offX, GAME_HEIGHT - 15}, "Top score: " + std::to_string((int)std::round(gScore.topScore)), {0.3, 0.3});
+
+  // Draw difficulty
+  fSize = doomFont->GetTextSizeProp(gEngine->gDifficulty->getMode());
+  offX = GAME_WIDTH - fSize.x + 50;
+  doomFont->DrawStringDecal({offX, GAME_HEIGHT - 15}, gEngine->gDifficulty->getMode(), {0.3, 0.3});
 
   // Render last z index
   sBird.render(engine, fElapsedTime);
@@ -582,10 +603,10 @@ void Scene::render(olc::PixelGameEngine *engine, float fElapsedTime)
     auto c_time = std::chrono::system_clock::now();
     float time = c_time.time_since_epoch().count() / 1000;
 
-    uint8_t alpha = (int) std::round(sine_between(gEngine->getRunTime(), 2, 0.25, 0.85) * 255) & 0xFF;
+    uint8_t alpha = (int) std::round(sine_between(gEngine->getRunTime(), 4, 0.65, 0.85) * 255) & 0xFF;
     float offX = GAME_WIDTH / 2 - sPaused->width / 2;
     float offY = GAME_HEIGHT / 2 - sPaused->height / 2;
-    engine->DrawDecal({offX, offY}, dPaused, {1.0f, 1.0f}, {255,255,255,alpha});
+    engine->DrawDecal({offX, offY}, dPaused, {1.0f, 1.0f}, {alpha,alpha,alpha,alpha});
   }
 }
 

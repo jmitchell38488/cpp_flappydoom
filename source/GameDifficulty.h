@@ -40,6 +40,7 @@ private:
 
   float fScaleFactor = 1.0f;
   float fScaleFactorStep = 0.15f;
+  float fPipeGap = PIPE_GAP;
 
 public:
   void setDifficulty(DifficultyMode mode)
@@ -48,32 +49,35 @@ public:
     {
     case DifficultyMode::EASY:
       bDiffChange = true;
-      fGameSpeed = 3.25f;
+      fGameSpeed = 3.0f;
       fGameDistance = GAME_WIDTH * 3;
       fGameScore = 1.0f;
       mPrevMode = mMode;
       mMode = mode;
       sMode = "I'm too young to die";
+      fPipeGap = PIPE_GAP;
       break;
 
     case DifficultyMode::MEDIUM:
       bDiffChange = true;
-      fGameSpeed = 3.95f;
+      fGameSpeed = 3.80f;
       fGameDistance = GAME_WIDTH * 6;
       fGameScore = 1.0f;
       mPrevMode = mMode;
       mMode = mode;
       sMode = "Hey, not too rough";
+      fPipeGap = PIPE_GAP;
       break;
 
     case DifficultyMode::HARD:
       bDiffChange = true;
-      fGameSpeed = 4.85f;
+      fGameSpeed = 4.80f;
       fGameDistance = GAME_WIDTH * 10;
       fGameScore = 1.5f;
       mPrevMode = mMode;
       mMode = mode;
       sMode = "Hurt me plenty";
+      fPipeGap = PIPE_GAP * 1.025;
       break;
 
     case DifficultyMode::NIGHTMARE:
@@ -84,6 +88,7 @@ public:
       mPrevMode = mMode;
       mMode = mode;
       sMode = "Nightmare";
+      fPipeGap = PIPE_GAP * 1.05;
       break;
 
     case DifficultyMode::IMPOSSIBLE:
@@ -94,6 +99,7 @@ public:
       mPrevMode = mMode;
       mMode = mode;
       sMode = "Watch me die!";
+      fPipeGap = PIPE_GAP * 1.075;
       break;
 
     case DifficultyMode::NOCHANGE:
@@ -244,7 +250,10 @@ public:
   float getScale() {
     return fScaleFactor;
   }
-  
+
+  float getPipeGap() {
+    return fPipeGap;
+  }
 };
 
 GameDifficulty::GameDifficulty()
