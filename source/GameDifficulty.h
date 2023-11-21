@@ -27,6 +27,16 @@ std::string DifficultyModeToString(DifficultyMode mode)
   }
 }
 
+DifficultyMode StringToDifficultyMode(std::string str)
+{
+  if (str == "I'm too young to die") return DifficultyMode::EASY;
+  if (str == "Hey, not too rough") return DifficultyMode::MEDIUM;
+  if (str == "Hurt me plenty") return DifficultyMode::HARD;
+  if (str == "Nightmare") return DifficultyMode::NIGHTMARE;
+  if (str == "Watch me die!") return DifficultyMode::IMPOSSIBLE;
+  if (str == "Challenge me!") return DifficultyMode::CHALLENGE;
+}
+
 class GameDifficulty
 {
 
@@ -102,7 +112,7 @@ public:
       break;
 
     case DifficultyMode::IMPOSSIBLE:
-      bDiffChange = true;
+      bDiffChange = false;
       fGameSpeed = 9.0f;
       fGameDistance = GAME_WIDTH * 20;
       fGameScore = 5.0f;
@@ -114,12 +124,15 @@ public:
     case DifficultyMode::NOCHANGE:
       bDiffChange = false;
       mPrevMode = mMode;
-      mMode = DifficultyMode::NOCHANGE;
       break;
+
+    case DifficultyMode::CHALLENGE:
+      bDiffChange = true;
+      mPrevMode = mMode;
     }
 
     fGameSpeed_sf = fGameSpeed;
-    sMode = DifficultyModeToString(mode);
+    sMode = DifficultyModeToString(mMode);
   }
 
   void gameUpdate(float distanceX)
@@ -129,7 +142,7 @@ public:
       return;
 
     // Highest difficulty
-    if (mMode == DifficultyMode::IMPOSSIBLE || mMode == DifficultyMode::NOCHANGE)
+    if (!bDiffChange)
       return;
 
     if (distanceX > fGameDistance)
@@ -179,7 +192,7 @@ public:
   }
 
   void decDifficulty() {
-    DifficultyMode mode = mMode == DifficultyMode::NOCHANGE ? mPrevMode : mMode;
+    DifficultyMode mode = !bDiffChange ? mPrevMode : mMode;
     switch (mode)
     {
     case DifficultyMode::MEDIUM:
@@ -208,7 +221,7 @@ public:
   }
 
   void incDifficulty() {
-    DifficultyMode mode = mMode == DifficultyMode::NOCHANGE ? mPrevMode : mMode;
+    DifficultyMode mode = !bDiffChange ? mPrevMode : mMode;
     switch (mode)
     {
     case DifficultyMode::EASY:
@@ -237,7 +250,7 @@ public:
   }
 
   void toggleNoChange() {
-    if (mMode != DifficultyMode::NOCHANGE) {
+    if (bDiffChange) {
       setDifficulty(DifficultyMode::NOCHANGE);
       bDiffChange = false;
     } else {
