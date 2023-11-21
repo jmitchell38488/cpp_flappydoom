@@ -4,6 +4,29 @@
 #include "Settings.h"
 #include "DifficultyMode.h"
 
+using namespace std;
+
+std::string DifficultyModeToString(DifficultyMode mode)
+{
+  switch (mode)
+  {
+  case DifficultyMode::EASY:
+    return "I'm too young to die";
+  case DifficultyMode::MEDIUM:
+    return "Hey, not too rough";
+  case DifficultyMode::HARD:
+    return "Hurt me plenty";
+  case DifficultyMode::NIGHTMARE:
+    return "Nightmare";
+  case DifficultyMode::IMPOSSIBLE:
+    return "Watch me die!";
+  case DifficultyMode::CHALLENGE:
+    return "Challenge me!";
+  default:
+    break;
+  }
+}
+
 class GameDifficulty
 {
 
@@ -45,7 +68,6 @@ public:
       fGameScore = 1.0f;
       mPrevMode = mMode;
       mMode = mode;
-      sMode = "I'm too young to die";
       fPipeGap = PIPE_GAP;
       break;
 
@@ -56,7 +78,6 @@ public:
       fGameScore = 1.0f;
       mPrevMode = mMode;
       mMode = mode;
-      sMode = "Hey, not too rough";
       fPipeGap = PIPE_GAP;
       break;
 
@@ -67,7 +88,6 @@ public:
       fGameScore = 1.5f;
       mPrevMode = mMode;
       mMode = mode;
-      sMode = "Hurt me plenty";
       fPipeGap = PIPE_GAP * 1.025;
       break;
 
@@ -78,7 +98,6 @@ public:
       fGameScore = 2.0f;
       mPrevMode = mMode;
       mMode = mode;
-      sMode = "Nightmare";
       fPipeGap = PIPE_GAP * 1.05;
       break;
 
@@ -89,7 +108,6 @@ public:
       fGameScore = 5.0f;
       mPrevMode = mMode;
       mMode = mode;
-      sMode = "Watch me die!";
       fPipeGap = PIPE_GAP * 1.075;
       break;
 
@@ -101,6 +119,7 @@ public:
     }
 
     fGameSpeed_sf = fGameSpeed;
+    sMode = DifficultyModeToString(mode);
   }
 
   void gameUpdate(float distanceX)

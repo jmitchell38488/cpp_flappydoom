@@ -7,5 +7,6 @@ enum class DifficultyMode
   HARD,
   NIGHTMARE,
   IMPOSSIBLE,
+  CHALLENGE,
   NOCHANGE
 };
