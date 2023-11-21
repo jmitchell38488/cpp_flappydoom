@@ -33,6 +33,7 @@
 
 enum class GameScreenState {
   SPLASHSCREEN,
+  MAINSCREEN,
   DIFFICULTYSELECT,
   HIGHSCORES,
   GAME,
@@ -870,7 +871,7 @@ void MenuScreen::handleInput(float fElapsedTime) {
 void MenuScreen::render(olc::PixelGameEngine *engine, float fElapsedTime) {
   switch (gEngine->gScreen) {
     case GameScreenState::SPLASHSCREEN:
-    case GameScreenState::HIGHSCORES:
+    case GameScreenState::MAINSCREEN:
       engine->Clear(olc::BLACK);
       break;
     
