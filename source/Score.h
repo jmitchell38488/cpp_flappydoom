@@ -25,8 +25,8 @@ struct GameScore {
     });
   }
 
-  std::vector<ScoreHistory> highestScores() {
-    std::vector<ScoreHistory> topScores(scores.begin(), scores.begin() + std::min<size_t>(scores.size(), 10));
+  std::vector<ScoreHistory> highestScores(uint8_t limit = 10) {
+    std::vector<ScoreHistory> topScores(scores.begin(), scores.begin() + std::min<size_t>(scores.size(), limit));
     return topScores;
   }
 };

@@ -277,6 +277,10 @@ public:
   float getPipeGap() {
     return fPipeGap;
   }
+
+  bool canChangeDifficulty() {
+    return bDiffChange;
+  }
 };
 
 GameDifficulty::GameDifficulty()
