@@ -1026,10 +1026,7 @@ void MenuScreen::tick(float fElapsedTime) {
 }
 
 void MenuScreen::handleInput(float fElapsedTime) {
-  if (gEngine->GetKey(olc::Key::Q).bPressed) gEngine->quit();
-
   if (bTransLogo) return; // Block all input until logo displays
-
   
   if (gEngine->GetKey(olc::Key::ESCAPE).bPressed) {
     for (int i = 0; i < vMenuOptions.size(); i++) {
