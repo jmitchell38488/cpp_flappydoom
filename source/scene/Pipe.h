@@ -32,6 +32,7 @@ private:
   float fMidY = GAME_HEIGHT / 2;
   float fGapY = 0.0f;
   float fPipeGap = PIPE_GAP;
+  uint8_t fPipeVar = 4;
 
   olc::Decal *dPipes;
 
@@ -61,7 +62,7 @@ public:
   bool isPast();
   void render(olc::PixelGameEngine *engine, float fElapsedTime);
   void reset(float offX, bool first);
-  void update(float fElapsedTime, float gameSpeed, float pipeGap);
+  void update(float fElapsedTime, float gameSpeed, float pipeGap, uint8_t pipeVar);
   float getX();
   float getY();
 };
@@ -175,7 +176,7 @@ void Pipe::render(olc::PixelGameEngine *engine, float fElapsedTime)
   }
 }
 
-void Pipe::update(float fElapsedTime, float gameSpeed, float pipeGap)
+void Pipe::update(float fElapsedTime, float gameSpeed, float pipeGap, uint8_t pipeVar)
 {
   fOffX -= gameSpeed;
   colDataTop->dx = fOffX;
@@ -189,6 +190,7 @@ void Pipe::update(float fElapsedTime, float gameSpeed, float pipeGap)
   }
 
   fPipeGap = pipeGap;
+  fPipeVar = pipeVar;
 }
 
 void Pipe::reset(float offX, bool first)
@@ -212,8 +214,8 @@ void Pipe::setOffY(bool first)
   
   fVertGap = ENABLE_DEBUG_MODE ? gSettings.P_GAP : fPipeGap;
 
-  float inc = std::floor(fVertGap * 1.25 / 2);
-  int offset = (std::rand() % 4) - 2;
+  float inc = std::floor(fVertGap * 1.25 / fPipeVar);
+  int offset = (std::rand() % fPipeVar * 2) - fPipeVar;
   fVertYOffset = inc * offset;
 
   // Taller than one pipe, readjust
@@ -229,5 +231,5 @@ float Pipe::getX()
 }
 
 float Pipe::getY() {
-  return fOffY;
+  return fVertYOffset;
 }

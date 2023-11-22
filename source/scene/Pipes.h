@@ -31,7 +31,7 @@ protected:
 public:
   Pipes() {}
   void init(float offX);
-  void update(float fElapsedTime, float gameSpeed, float pipeGap);
+  void update(float fElapsedTime, float gameSpeed, float pipeGap, uint8_t pipeVar);
   void render(olc::PixelGameEngine *engine, float fElapsedTime);
   void setScrolling();
   void setIdle();
@@ -55,7 +55,7 @@ float Pipes::getMaxXOffset() {
   return maxX;
 }
 
-void Pipes::update(float fElapsedTime, float gameSpeed, float pipeGap)
+void Pipes::update(float fElapsedTime, float gameSpeed, float pipeGap, uint8_t pipeVar)
 {
   if (state == PipesState::SCROLLING)
   {
@@ -71,7 +71,7 @@ void Pipes::update(float fElapsedTime, float gameSpeed, float pipeGap)
         if (!pipe->isVisible() && lp_offy == pipe->getY() && pipe != vPipes[0]) {
           pipe->reset(pipe->getX(), false);
         }
-        pipe->update(fElapsedTime, gameSpeed, pipeGap);
+        pipe->update(fElapsedTime, gameSpeed, pipeGap, pipeVar);
       }
       lp_offy = pipe->getY();
     }

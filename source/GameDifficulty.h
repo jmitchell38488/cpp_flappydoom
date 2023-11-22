@@ -65,6 +65,7 @@ private:
   float fScaleFactor = 1.0f;
   float fScaleFactorStep = 0.15f;
   float fPipeGap = PIPE_GAP;
+  uint8_t fPipeVar = 3;
 
 public:
   void setDifficulty(DifficultyMode mode)
@@ -79,6 +80,7 @@ public:
       mPrevMode = mMode;
       mMode = mode;
       fPipeGap = PIPE_GAP;
+      fPipeVar = 3;
       break;
 
     case DifficultyMode::MEDIUM:
@@ -89,6 +91,7 @@ public:
       mPrevMode = mMode;
       mMode = mode;
       fPipeGap = PIPE_GAP;
+      fPipeVar = 4;
       break;
 
     case DifficultyMode::HARD:
@@ -99,6 +102,7 @@ public:
       mPrevMode = mMode;
       mMode = mode;
       fPipeGap = PIPE_GAP * 1.015;
+      fPipeVar = 5;
       break;
 
     case DifficultyMode::NIGHTMARE:
@@ -109,6 +113,7 @@ public:
       mPrevMode = mMode;
       mMode = mode;
       fPipeGap = PIPE_GAP * 1.025;
+      fPipeVar = 6;
       break;
 
     case DifficultyMode::IMPOSSIBLE:
@@ -119,6 +124,7 @@ public:
       mPrevMode = mMode;
       mMode = mode;
       fPipeGap = PIPE_GAP * 1.035;
+      fPipeVar = 7;
       break;
 
     case DifficultyMode::NOCHANGE:
@@ -276,6 +282,10 @@ public:
 
   float getPipeGap() {
     return fPipeGap;
+  }
+
+  uint8_t getPipeVar() {
+    return fPipeVar;
   }
 
   bool canChangeDifficulty() {

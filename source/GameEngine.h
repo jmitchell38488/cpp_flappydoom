@@ -276,6 +276,37 @@ public:
   void updateScreen(GameScreenState screen);
 };
 
+// enum class MenuDirection {
+//   HORZ, VERT
+// };
+
+// class GameEngine;
+
+// class GameMenuScreen : MenuScreen {
+// protected:
+//   std::vector<MenuOptions<void(GameEngine*)>> vOptions;
+//   MenuDirection mDir;
+
+// public:
+//   GameMenuScreen();
+//   GameMenuScreen(GameEngine *engine);
+// };
+
+// class MainMenuScreen : GameMenuScreen {
+// public:
+//   void init();
+// };
+
+// class DifficultyMenuScreen : GameMenuScreen {
+// public:
+//   void init();
+// };
+
+// class HighScoreMenuScreen : GameMenuScreen {
+// public:
+//   void init();
+// };
+
 
 class GameEngine : public olc::PixelGameEngine
 {
@@ -412,12 +443,10 @@ void GameEngine::resetGame()
 
 void GameEngine::addScore()
 {
-  if (gScore.score > gScore.topScore)
-    gScore.topScore = gScore.score;
-  gScore.runs++;
-
-  if (gScore.score > 0)
-    gScore.pushScore({gScore.score, gScore.runs, gDifficulty->getMode()});
+  if (gState == GameState::GAMEOVER)
+    return;
+  gScene->score();
+  fGameScore += gDifficulty->gameScore();
 }
 
 void GameEngine::jump()
@@ -437,6 +466,13 @@ void GameEngine::handleInput(float fElapsedTime)
   {
     if (gState == GameState::GAMEOVER)
     {
+      if (gScore.score > gScore.topScore)
+        gScore.topScore = gScore.score;
+      gScore.runs++;
+
+      if (gScore.score > 0)
+        gScore.pushScore({gScore.score, gScore.runs, gDifficulty->getMode()});
+      
       resetGame();
     }
     else if (!bPlaying && gState != GameState::PAUSED)
@@ -691,7 +727,7 @@ float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
     sBackground.update(fElapsedTime);
     sGround.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2);
     sCeiling.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2);
-    sPipes.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2, gEngine->gDifficulty->getPipeGap());
+    sPipes.update(fElapsedTime, difficulty->gameSpeed() * 1 + fElapsedTime / 2, gEngine->gDifficulty->getPipeGap(), gEngine->gDifficulty->getPipeVar());
   }
 
   sBird.update(fElapsedTime, gEngine->getRunTime(), gEngine->isGamePlaying());
@@ -699,7 +735,6 @@ float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
   if (checkCollisions() && gEngine->gState == GameState::PLAYING)
   {
     gEngine->setGameState(GameState::GAMEOVER);
-    gEngine->addScore();
   }
 
   return fGameDistance;
@@ -898,10 +933,8 @@ void MenuScreen::init() {
 }
 
 void MenuScreen::updateScreen(GameScreenState screen) {
-  if (gEngine->gScreen == GameScreenState::RESUME && screen == GameScreenState::MAINSCREEN) {
+  if (gEngine->gScreen == GameScreenState::RESUME && screen == GameScreenState::MAINSCREEN)
     gEngine->gSoundMan->stopGame();
-    gEngine->resetGame();
-  }
 
   gEngine->gPrevScreen = gEngine->gScreen;
   gEngine->gScreen = screen;
@@ -1088,7 +1121,6 @@ void MenuScreen::render(olc::PixelGameEngine *engine, float fElapsedTime) {
   if (gEngine->gScreen == GameScreenState::HIGHSCORES) {
     std::string str = "HIGHSCORES";
     offX = (float)doomFont24->GetTextSize(str).x * 0.75f;
-    offX = GAME_WIDTH / 2 - offX / 2;
     doomFont24->DrawStringDecal({offX, offY}, str, {0.75f, 0.75f}, px);
     offY += gapY;
 
