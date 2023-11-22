@@ -443,10 +443,12 @@ void GameEngine::resetGame()
 
 void GameEngine::addScore()
 {
-  if (gState == GameState::GAMEOVER)
-    return;
-  gScene->score();
-  fGameScore += gDifficulty->gameScore();
+  if (gScore.score > gScore.topScore)
+    gScore.topScore = gScore.score;
+  gScore.runs++;
+
+  if (gScore.score > 0)
+    gScore.pushScore({gScore.score, gScore.runs, gDifficulty->getMode()});
 }
 
 void GameEngine::jump()
@@ -466,13 +468,6 @@ void GameEngine::handleInput(float fElapsedTime)
   {
     if (gState == GameState::GAMEOVER)
     {
-      if (gScore.score > gScore.topScore)
-        gScore.topScore = gScore.score;
-      gScore.runs++;
-
-      if (gScore.score > 0)
-        gScore.pushScore({gScore.score, gScore.runs, gDifficulty->getMode()});
-      
       resetGame();
     }
     else if (!bPlaying && gState != GameState::PAUSED)
@@ -735,6 +730,7 @@ float Scene::tick(float fElapsedTime, GameDifficulty *difficulty)
   if (checkCollisions() && gEngine->gState == GameState::PLAYING)
   {
     gEngine->setGameState(GameState::GAMEOVER);
+    gEngine->addScore();
   }
 
   return fGameDistance;
@@ -933,8 +929,10 @@ void MenuScreen::init() {
 }
 
 void MenuScreen::updateScreen(GameScreenState screen) {
-  if (gEngine->gScreen == GameScreenState::RESUME && screen == GameScreenState::MAINSCREEN)
+  if (gEngine->gScreen == GameScreenState::RESUME && screen == GameScreenState::MAINSCREEN) {
     gEngine->gSoundMan->stopGame();
+    gEngine->resetGame();
+  }
 
   gEngine->gPrevScreen = gEngine->gScreen;
   gEngine->gScreen = screen;
