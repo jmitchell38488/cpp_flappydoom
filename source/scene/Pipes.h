@@ -69,7 +69,7 @@ void Pipes::update(float fElapsedTime, float gameSpeed, float pipeGap)
       else
       {
         if (!pipe->isVisible() && lp_offy == pipe->getY() && pipe != vPipes[0]) {
-          // pipe->reset(pipe->getX(), false);
+          pipe->reset(pipe->getX(), false);
         }
         pipe->update(fElapsedTime, gameSpeed, pipeGap);
       }

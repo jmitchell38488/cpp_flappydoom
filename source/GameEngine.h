@@ -354,6 +354,7 @@ public:
   float getRunTime();
   bool isGamePlaying();
   void setPlaying();
+  void resumeGame();
   void quit();
 };
 
@@ -465,12 +466,13 @@ void GameEngine::handleInput(float fElapsedTime)
   {
     if (gState == GameState::GAMEOVER)
     {
-      if (gScore.score > 0)
-        gScore.pushScore({gScore.score, gScore.runs, gDifficulty->getMode()});
-
       if (gScore.score > gScore.topScore)
         gScore.topScore = gScore.score;
       gScore.runs++;
+
+      if (gScore.score > 0)
+        gScore.pushScore({gScore.score, gScore.runs, gDifficulty->getMode()});
+      
       resetGame();
     }
     else if (!bPlaying && gState != GameState::PAUSED)
@@ -671,6 +673,13 @@ void GameEngine::setPlaying() {
   if (gState != GameState::GAMEOVER) {
     setGameState(GameState::IDLE);
     gScene->startGame();
+  }
+}
+
+void GameEngine::resumeGame() {
+  gScreen = GameScreenState::GAME;
+  if (gState != GameState::GAMEOVER) {
+    setGameState(GameState::PLAYING);
   }
 }
 
@@ -959,7 +968,8 @@ void MenuScreen::updateScreen(GameScreenState screen) {
       gEngine->gState = GameState::MENU;
   }
 
-  if (screen == GameScreenState::GAME) gEngine->setPlaying();
+  if (screen == GameScreenState::GAME && gEngine->gState == GameState::GAMEOVER) gEngine->resumeGame();
+  else if (screen == GameScreenState::GAME) gEngine->setPlaying();
   if (screen == GameScreenState::MAINSCREEN) bTransLogo = false;
   // if (screen == GameScreenState::RESUME) {
   //   gEngine->gState = GameState::MENU;
@@ -1072,8 +1082,6 @@ void MenuScreen::handleInput(float fElapsedTime) {
 
       updateScreen(vMenuOptions[fCurMenuIdx].gNext);
     }
-
-    if (gEngine->GetKey(olc::Key::SPACE).bPressed) gEngine->setPlaying();
   }
 
   
