@@ -98,7 +98,7 @@ public:
       fGameScore = 1.5f;
       mPrevMode = mMode;
       mMode = mode;
-      fPipeGap = PIPE_GAP * 1.025;
+      fPipeGap = PIPE_GAP * 1.015;
       break;
 
     case DifficultyMode::NIGHTMARE:
@@ -108,7 +108,7 @@ public:
       fGameScore = 2.0f;
       mPrevMode = mMode;
       mMode = mode;
-      fPipeGap = PIPE_GAP * 1.05;
+      fPipeGap = PIPE_GAP * 1.025;
       break;
 
     case DifficultyMode::IMPOSSIBLE:
@@ -118,7 +118,7 @@ public:
       fGameScore = 5.0f;
       mPrevMode = mMode;
       mMode = mode;
-      fPipeGap = PIPE_GAP * 1.075;
+      fPipeGap = PIPE_GAP * 1.035;
       break;
 
     case DifficultyMode::NOCHANGE:

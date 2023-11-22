@@ -39,15 +39,25 @@ This game is _not_ optimized to run with [OLC Pixel Game Engine Mobile][olc-pgex
 ### How to play
 The game is composed of runs. A run is an attempt to navigate the gates. There are 5 difficulty levels, that affect the score the player receives for passing through a gate, and the speed the game plays at.
 
+**Menu:**
+
+* `UP/DOWN` arrow keys to navigate menu items
+* `ENTER` to select a menu option
+* `ESC` to select Quit/Main menu
+
+The high scores menu won't appear until at least 1 run has been completed with a score.
+
+**Game play:**
+
 * `SPACEBAR` to start a new run and jump Flappy DOOM
-* `ESCAPE` to reset the current run
+* `ESCAPE` to show the game menu
 * `ENTER` to pause the current run
-* `Q` to quit the game
 
 Check `definitions.h` for enabling debug mode and full screen. Debug mode can be enabled by changing the bool `ENABLE_DEBUG_MODE` to `true` in `Settings.h`
 
 Additional controls available during gameplay:
 
+* `Q` to quit the game
 * `D` to enter wireframe mode
 * `P` to clamp the difficulty mode
 * `O` to increase difficulty

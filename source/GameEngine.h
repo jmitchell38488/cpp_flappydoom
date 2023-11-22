@@ -505,7 +505,8 @@ void GameEngine::handleInput(float fElapsedTime)
   }
 
   if (GetKey(olc::Key::ESCAPE).bPressed)
-  {if (ENABLE_DEBUG_MODE) {
+  {
+    if (ENABLE_DEBUG_MODE) {
       resetGame();
     }
 
@@ -521,7 +522,9 @@ void GameEngine::handleInput(float fElapsedTime)
 
   if (GetKey(olc::Key::Q).bPressed)
   {
-    quit();
+    if (ENABLE_DEBUG_MODE) {
+      quit();
+    }
   }
 
   if (GetKey(olc::Key::D).bPressed)
