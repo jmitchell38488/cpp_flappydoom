@@ -34,7 +34,7 @@
 #include <chrono>
 #include <ctime>
 
-extern GameSettings gSettings;
+extern struct GameSettings gSettings;
 
 enum class GameScreenState {
   SPLASHSCREEN,

@@ -1,7 +1,4 @@
 #include "GameEngine.h"
-#include "definitions.h"
-
-extern GameSettings gSettings;
 
 int main() {
 	GameEngine game;

@@ -8,7 +8,7 @@
 #include "../definitions.h"
 #include "../Score.h"
 
-extern GameSettings gSettings;
+extern struct GameSettings gSettings;
 
 class GameEngine;
 

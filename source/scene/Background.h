@@ -7,7 +7,7 @@
 #include "../Settings.h"
 #include "../definitions.h"
 
-extern GameSettings gSettings;
+extern struct GameSettings gSettings;
 
 enum class BackgroundState {
 	IDLE, SCROLLING

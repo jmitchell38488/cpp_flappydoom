@@ -5,7 +5,7 @@
 #include "../lib/olcPixelGameEngine.h"
 #include "../definitions.h"
 
-extern GameSettings gSettings;
+extern struct GameSettings gSettings;
 
 struct AnimFrame
 {
