@@ -42,7 +42,15 @@ set(SOURCE_DATA_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/source/assets)
 file(
     GLOB_RECURSE _demoSourceFiles
     "${SOURCE_CXX_SRC_DIR}/*.cpp"
+    # "${SOURCE_CXX_SRC_DIR}/*.h"
 )
+
+# file(GLOB SOURCES
+#     "${SOURCE_CXX_SRC_DIR}/*.h"
+#     "${SOURCE_CXX_SRC_DIR}/*.cpp"
+#     # header-folder/*.h
+#     # source-folder/*.cpp
+# )
 
 foreach(_demoSource IN LISTS _demoSourceFiles) #######################
 

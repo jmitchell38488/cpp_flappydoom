@@ -1,3 +1,6 @@
+#ifndef GAME_SCRIPT_COMMAND_DIFFICULTY
+#define GAME_SCRIPT_COMMAND_DIFFICULTY
+
 #pragma once
 #include "../GameScript.h"
 #include "../GameDifficulty.h"
@@ -20,3 +23,5 @@ void gCommand_Difficulty::start() {
   gEngine->setDifficultyMode(gMode);
   bCompleted = true;
 }
+
+#endif // GAME_SCRIPT_COMMAND_DIFFICULTY

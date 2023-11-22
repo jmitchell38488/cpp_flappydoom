@@ -1,8 +1,13 @@
+#ifndef SCENE_GROUND
+#define SCENE_GROUND
+
 #pragma once
 
 #include "../lib/olcPixelGameEngine.h"
 #include "../Settings.h"
 #include "../definitions.h"
+
+extern GameSettings gSettings;
 
 enum class GroundState {
 	IDLE, SCROLLING
@@ -92,3 +97,6 @@ void Ground::reset() {
 	state = GroundState::IDLE;
 	fPosition = { 0, fPosition.y };
 }
+
+
+#endif // SCENE_GROUND

@@ -1,3 +1,6 @@
+#ifndef GAME_UTIL
+#define GAME_UTIL
+
 #pragma once
 
 #include <chrono>
@@ -108,3 +111,5 @@ void string_to_lower(std::string str)
 float ease_in_ease_out(float normTime) {
     return normTime < 0.5f ? 0.5f * pow(2 * normTime, 2) : -0.5f * (pow(2 * normTime - 2, 2) - 2);
 }
+
+#endif // GAME_UTIL

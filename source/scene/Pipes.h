@@ -1,3 +1,6 @@
+#ifndef SCENE_PIPES
+#define SCENE_PIPES
+
 #pragma once
 #include "Pipe.h"
 
@@ -142,3 +145,5 @@ void Pipes::addPipes()
     fLastXOffset = nextX;
   }
 }
+
+#endif // SCENE_PIPES

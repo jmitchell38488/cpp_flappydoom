@@ -1,9 +1,14 @@
+#ifndef SCENE_PIPE
+#define SCENE_PIPE
+
 #pragma once
 #include <cstdlib>
 
 #include "BirdData.h"
 #include "../definitions.h"
 #include "../Score.h"
+
+extern GameSettings gSettings;
 
 class GameEngine;
 
@@ -231,3 +236,5 @@ float Pipe::getX()
 float Pipe::getY() {
   return fOffY;
 }
+
+#endif // SCENE_PIPE

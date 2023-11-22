@@ -1,3 +1,6 @@
+#ifndef DIFFICULTY_MODE
+#define DIFFICULTY_MODE
+
 #pragma once
 
 enum class DifficultyMode
@@ -10,3 +13,5 @@ enum class DifficultyMode
   CHALLENGE,
   NOCHANGE
 };
+
+#endif // DIFFICULTY_MODE

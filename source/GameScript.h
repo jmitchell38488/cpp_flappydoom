@@ -1,3 +1,6 @@
+#ifndef GAME_SCRIPT
+#define GAME_SCRIPT
+
 #pragma once
 
 using namespace std;
@@ -55,3 +58,5 @@ void GameScriptProcessor::completeCommand() {
     m_listCommands.front()->bCompleted = true;
   }
 }
+
+#endif // GAME_SCRIPT

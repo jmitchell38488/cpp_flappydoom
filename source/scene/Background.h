@@ -1,8 +1,13 @@
+#ifndef SCENE_BACKGROUND
+#define SCENE_BACKGROUND
+
 #pragma once
 
 #include "../lib/olcPixelGameEngine.h"
 #include "../Settings.h"
 #include "../definitions.h"
+
+extern GameSettings gSettings;
 
 enum class BackgroundState {
 	IDLE, SCROLLING
@@ -93,3 +98,5 @@ void Background::reset() {
 	fLastAnimTime = 0.0f;
 	state = BackgroundState::IDLE;
 }
+
+#endif //SCENE_BACKGROUND

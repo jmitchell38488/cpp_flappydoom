@@ -1,3 +1,6 @@
+#ifndef SCENE_SPLASH_BIRD
+#define SCENE_SPLASH_BIRD
+
 #pragma once
 #include "Bird.h"
 
@@ -58,3 +61,5 @@ public:
 		return bDied;
 	}
 };
+
+#endif // SCENE_SPLASH_BIRD

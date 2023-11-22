@@ -1,3 +1,6 @@
+#ifndef GAME_DIFFICULTY
+#define GAME_DIFFICULTY
+
 #pragma once
 
 #include "definitions.h"
@@ -289,3 +292,5 @@ GameDifficulty::GameDifficulty()
 }
 
 GameDifficulty::~GameDifficulty() {}
+
+#endif // GAME_DIFFICULTY

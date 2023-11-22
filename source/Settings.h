@@ -1,3 +1,6 @@
+#ifndef GAME_SETTINGS
+#define GAME_SETTINGS
+
 #pragma once
 
 const int GAME_WIDTH = 800;
@@ -34,3 +37,5 @@ const float PIPE_SF = 1.0f;
 const float PIPE_GAP = 155.0f;
 
 const bool ENABLE_DEBUG_MODE = false;
+
+#endif // GAME_SETTINGS

@@ -1,3 +1,6 @@
+#ifndef SCENE_BIRD_DATA
+#define SCENE_BIRD_DATA
+
 #pragma once
 
 struct BirdData {
@@ -9,3 +12,5 @@ struct BirdData {
   float dh;
   float r;
 };
+
+#endif // SCENE_BIRD_DATA

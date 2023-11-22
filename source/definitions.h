@@ -1,3 +1,6 @@
+#ifndef GAME_DEFINITIONS
+#define GAME_DEFINITIONS
+
 #pragma once
 
 // #define DEBUG_MODE false
@@ -27,4 +30,4 @@ struct GameSettings {
   }
 };
 
-GameSettings gSettings;
+#endif // GAME_DEFINITIONS

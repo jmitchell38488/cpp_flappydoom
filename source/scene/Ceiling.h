@@ -1,9 +1,13 @@
-#pragma once
+#ifndef SCENE_CEILING
+#define SCENE_CEILING
+
 #pragma once
 
 #include "../lib/olcPixelGameEngine.h"
 #include "../Settings.h"
 #include "../definitions.h"
+
+extern GameSettings gSettings;
 
 enum class CeilingState {
 	IDLE, SCROLLING
@@ -95,3 +99,5 @@ void Ceiling::reset() {
 	state = CeilingState::IDLE;
 	fPosition = { 0, fPosition.y };
 }
+
+#endif // SCENE_CEILING

@@ -1,3 +1,6 @@
+#ifndef GAME_SCRIPT_COMMAND_SCORE
+#define GAME_SCRIPT_COMMAND_SCORE
+
 #pragma once
 #include "../GameScript.h"
 
@@ -12,3 +15,5 @@ void gCommand_Score::start() {
   bStarted = true;
   bCompleted = true;
 }
+
+#endif // GAME_SCRIPT_COMMAND_SCORE

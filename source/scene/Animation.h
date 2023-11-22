@@ -1,7 +1,11 @@
+#ifndef SCENE_ANIMATION
+#define SCENE_ANIMATION
 #pragma once
 
 #include "../lib/olcPixelGameEngine.h"
 #include "../definitions.h"
+
+extern GameSettings gSettings;
 
 struct AnimFrame
 {
@@ -200,3 +204,5 @@ void Animation::render(olc::PixelGameEngine *engine, float fElapsedTime)
 											 (int)(fCurFrame->sw / 2 * 0.95), {0, 255, 0});
 	}
 }
+
+#endif // SCENE_ANIMATION

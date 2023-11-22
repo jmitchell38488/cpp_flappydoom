@@ -1,3 +1,6 @@
+#ifndef GAME_ENGINE
+#define GAME_ENGINE
+
 #pragma once
 
 #define OLC_SOUNDWAVE
@@ -30,6 +33,8 @@
 #include <list>
 #include <chrono>
 #include <ctime>
+
+extern GameSettings gSettings;
 
 enum class GameScreenState {
   SPLASHSCREEN,
@@ -1134,3 +1139,5 @@ void MenuScreen::loadAssets() {
 
   vPosition = {(float)(GAME_WIDTH / 2 - sLogo->width / 2), (float)GAME_HEIGHT};
 }
+
+#endif // GAME_ENGINE

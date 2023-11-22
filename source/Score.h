@@ -1,3 +1,6 @@
+#ifndef GAME_SCORE
+#define GAME_SCORE
+
 #pragma once
 
 #include "DifficultyMode.h"
@@ -32,3 +35,5 @@ struct GameScore {
 };
 
 GameScore gScore;
+
+#endif // GAME_SCORE
