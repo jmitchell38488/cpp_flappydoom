@@ -906,6 +906,8 @@ void MenuScreen::init() {
   auto fnHs = [this](){return this->scoreRef->scores.size() > 0;};
   auto fnRs = [this](){return this->gEngine->gPrevScreen == GameScreenState::RESUME;};
   auto fnMn = [this](){return this->gEngine->gPrevScreen == GameScreenState::MAINSCREEN;};
+  auto fnGo = [this](){return this->gEngine->gState == GameState::GAMEOVER;};
+  auto fnNgo = [this](){return this->gEngine->gState != GameState::GAMEOVER;};
 
   // Main menu
   vOptions.push_back({1, "New game", GameScreenState::MAINSCREEN, GameScreenState::DIFFICULTYSELECT, true});
@@ -922,10 +924,11 @@ void MenuScreen::init() {
   vOptions.push_back({7, "Main menu", GameScreenState::DIFFICULTYSELECT, GameScreenState::MAINSCREEN});
 
   // Resume menu
-  vOptions.push_back({1, "Resume game", GameScreenState::RESUME, GameScreenState::GAME, true});
-  vOptions.push_back({2, "High scores", GameScreenState::RESUME, GameScreenState::HIGHSCORES, false, fnHs});
-  vOptions.push_back({3, "Main menu", GameScreenState::RESUME, GameScreenState::MAINSCREEN});
-  vOptions.push_back({4, "Quit", GameScreenState::RESUME});
+  vOptions.push_back({1, "Reset game", GameScreenState::RESUME, GameScreenState::GAME, true, fnGo});
+  vOptions.push_back({2, "Resume game", GameScreenState::RESUME, GameScreenState::GAME, true, fnNgo});
+  vOptions.push_back({3, "High scores", GameScreenState::RESUME, GameScreenState::HIGHSCORES, false, fnHs});
+  vOptions.push_back({4, "Main menu", GameScreenState::RESUME, GameScreenState::MAINSCREEN});
+  vOptions.push_back({5, "Quit", GameScreenState::RESUME});
 
   // High scores menu
   vOptions.push_back({1, "Back", GameScreenState::HIGHSCORES, GameScreenState::RESUME, true, fnRs});
@@ -1071,6 +1074,10 @@ void MenuScreen::handleInput(float fElapsedTime) {
 
       if (vMenuOptions[fCurMenuIdx].sTitle == "Quit") {
         gEngine->quit();
+      }
+
+      if (vMenuOptions[fCurMenuIdx].iVal == 1 && gEngine->gScreen == GameScreenState::RESUME) {
+        gEngine->resetGame();
       }
 
       updateScreen(vMenuOptions[fCurMenuIdx].gNext);
