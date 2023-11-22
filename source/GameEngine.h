@@ -510,13 +510,6 @@ void GameEngine::handleInput(float fElapsedTime)
       resetGame();
     }
 
-    if (gState == GameState::GAMEOVER)
-    {
-      if (gScore.score > gScore.topScore)
-        gScore.topScore = gScore.score;
-      gScore.runs++;
-    }
-
     gMenu->handleInput(fElapsedTime);
   }
 
