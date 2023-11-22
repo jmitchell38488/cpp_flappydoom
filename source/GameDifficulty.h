@@ -105,7 +105,7 @@ public:
       bDiffChange = true;
       fGameSpeed = 6.0f;
       fGameDistance = GAME_WIDTH * 15;
-      fGameScore = 2.0f;
+      fGameScore = 3.0f;
       mPrevMode = mMode;
       mMode = mode;
       fPipeGap = PIPE_GAP * 1.025;
@@ -115,7 +115,7 @@ public:
       bDiffChange = false;
       fGameSpeed = 9.0f;
       fGameDistance = GAME_WIDTH * 20;
-      fGameScore = 5.0f;
+      fGameScore = 3.5f;
       mPrevMode = mMode;
       mMode = mode;
       fPipeGap = PIPE_GAP * 1.035;

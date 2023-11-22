@@ -276,37 +276,6 @@ public:
   void updateScreen(GameScreenState screen);
 };
 
-// enum class MenuDirection {
-//   HORZ, VERT
-// };
-
-// class GameEngine;
-
-// class GameMenuScreen : MenuScreen {
-// protected:
-//   std::vector<MenuOptions<void(GameEngine*)>> vOptions;
-//   MenuDirection mDir;
-
-// public:
-//   GameMenuScreen();
-//   GameMenuScreen(GameEngine *engine);
-// };
-
-// class MainMenuScreen : GameMenuScreen {
-// public:
-//   void init();
-// };
-
-// class DifficultyMenuScreen : GameMenuScreen {
-// public:
-//   void init();
-// };
-
-// class HighScoreMenuScreen : GameMenuScreen {
-// public:
-//   void init();
-// };
-
 
 class GameEngine : public olc::PixelGameEngine
 {
@@ -1119,6 +1088,7 @@ void MenuScreen::render(olc::PixelGameEngine *engine, float fElapsedTime) {
   if (gEngine->gScreen == GameScreenState::HIGHSCORES) {
     std::string str = "HIGHSCORES";
     offX = (float)doomFont24->GetTextSize(str).x * 0.75f;
+    offX = GAME_WIDTH / 2 - offX / 2;
     doomFont24->DrawStringDecal({offX, offY}, str, {0.75f, 0.75f}, px);
     offY += gapY;
 
