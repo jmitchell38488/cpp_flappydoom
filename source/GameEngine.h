@@ -403,7 +403,8 @@ void GameEngine::setGameState(GameState state)
   {
   case GameState::MENU:
     bPlaying = false;
-    gScene->setGameState(GameState::IDLE);
+    if (gState != GameState::GAMEOVER)
+      gScene->setGameState(GameState::IDLE);
     gScreen = GameScreenState::SPLASHSCREEN;
     break;
 
@@ -455,7 +456,7 @@ void GameEngine::jump()
 
 void GameEngine::handleInput(float fElapsedTime)
 {
-  if (gState == GameState::MENU) {
+  if (gState == GameState::MENU || gScreen == GameScreenState::RESUME) {
     gMenu->handleInput(fElapsedTime);
     return;
   }
@@ -637,7 +638,7 @@ bool GameEngine::update(float fElapsedTime)
   if (gState != GameState::MENU || gScreen == GameScreenState::RESUME)
     gScene->render(this, fElapsedTime);
   
-  if (gState == GameState::MENU)
+  if (gState == GameState::MENU || gScreen == GameScreenState::RESUME)
     gMenu->render(this, fElapsedTime);
 
   return true;
@@ -665,10 +666,12 @@ float GameEngine::getRunTime()
   return elapsedTime.count();
 }
 
-  void GameEngine::setPlaying() {
+void GameEngine::setPlaying() {
   gScreen = GameScreenState::GAME;
-  setGameState(GameState::IDLE);
-  gScene->startGame();
+  if (gState != GameState::GAMEOVER) {
+    setGameState(GameState::IDLE);
+    gScene->startGame();
+  }
 }
 
 void GameEngine::quit() {
@@ -930,7 +933,8 @@ void MenuScreen::updateScreen(GameScreenState screen) {
 
   gEngine->gPrevScreen = gEngine->gScreen;
   gEngine->gScreen = screen;
-  gEngine->setGameState(GameState::IDLE);
+  if (gEngine->gState != GameState::GAMEOVER)
+    gEngine->setGameState(GameState::IDLE);
 
   if (vMenuOptions.size() > 0) vMenuOptions.clear();
   if (screen != GameScreenState::GAME) {
@@ -951,14 +955,15 @@ void MenuScreen::updateScreen(GameScreenState screen) {
       }
     }
     
-    gEngine->gState = GameState::MENU;
+    if (screen != GameScreenState::RESUME)
+      gEngine->gState = GameState::MENU;
   }
 
   if (screen == GameScreenState::GAME) gEngine->setPlaying();
   if (screen == GameScreenState::MAINSCREEN) bTransLogo = false;
-  if (screen == GameScreenState::RESUME) {
-    gEngine->gState = GameState::MENU;
-  }
+  // if (screen == GameScreenState::RESUME) {
+  //   gEngine->gState = GameState::MENU;
+  // }
   
 }
 
@@ -1125,11 +1130,11 @@ void MenuScreen::render(olc::PixelGameEngine *engine, float fElapsedTime) {
     doomFont24->DrawStringDecal({offX, offY}, str, {0.35f, 0.35f}, px);
     offY += gapY;
 
-    for (auto score : gScore.highestScores()) {
+    for (auto score : gScore.highestScores(7)) {
       str = std::to_string((int)score.score) + " - " + score.mode + " - " + std::to_string((int)score.run);
       offX = (float)doomFont24->GetTextSize(str).x * 0.35f;
       offX = GAME_WIDTH / 2 - offX / 2;
-      doomFont24->DrawStringDecal({offX, offY}, str, {0.35f, 0.53f}, px);
+      doomFont24->DrawStringDecal({offX, offY}, str, {0.35f, 0.35}, px);
       offY += gapY;
     }
     offY += gapY;
@@ -1137,7 +1142,7 @@ void MenuScreen::render(olc::PixelGameEngine *engine, float fElapsedTime) {
   }
 
   for (auto opt : vMenuOptions) {
-    offX = (float)doomFont24->GetTextSize(opt.sTitle).x;
+    offX = (float)doomFont24->GetTextSize(opt.sTitle).x * 0.75f;
     offX = GAME_WIDTH / 2 - offX / 2;
     px = olc::WHITE;
     if (opt.bSelected) px = olc::RED;
